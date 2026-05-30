@@ -1,0 +1,42 @@
+logging:
+  level:
+    root: INFO
+    in.shivam.retaillite: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+spring:
+  application:
+    name: RetailLite
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      show-sql: true
+      ddl-auto: update
+  servlet:
+    multipart-max: 2MB
+    multipart-min: 0.04MB
+  docker:
+    compose:
+      enabled: false
+server:
+  servlet:
+    context-path: /api/v1.0
+app:
+  security:
+    jwt-secret-key: ${JWT_SECRET_KEY}
+    token-expiration-in-minute: ${TOKEN_EXPIRATION_TIME_IN_MINUTE}
+
+aws:
+  region: ${AWS_REGION}
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
+  bucket-name: ${BUCKET_NAME}
+  endpoint: http://localhost:4566
+#todo:insert credentials
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID}
+  key-secret: ${RAZORPAY_KEY_SECRET}
