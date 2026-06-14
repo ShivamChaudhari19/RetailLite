@@ -3,11 +3,8 @@ package in.shivam.retaillite.auth.service.impl;
 import in.shivam.retaillite.user.entity.User;
 
 
-import in.shivam.retaillite.user.repository.UserRepository;
-import in.shivam.retaillite.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

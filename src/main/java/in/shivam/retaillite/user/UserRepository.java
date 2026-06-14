@@ -1,4 +1,4 @@
-package in.shivam.retaillite.user.repository;
+package in.shivam.retaillite.user;
 
 import in.shivam.retaillite.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

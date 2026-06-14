@@ -5,7 +5,7 @@ import in.shivam.retaillite.user.dto.UserRequest;
 import in.shivam.retaillite.user.dto.UserResponse;
 import in.shivam.retaillite.user.entity.User;
 import in.shivam.retaillite.user.exception.UserAlreadyExists;
-import in.shivam.retaillite.user.repository.UserRepository;
+import in.shivam.retaillite.user.UserRepository;
 import in.shivam.retaillite.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;

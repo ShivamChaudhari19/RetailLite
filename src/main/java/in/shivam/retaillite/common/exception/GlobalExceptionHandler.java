@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,6 +25,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler( AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException exception){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        ErrorResponse.builder()
+                                .error("unauthorized")
+                                .message( "invalid username or password")
+                                .status(HttpStatus.UNAUTHORIZED.value())
+                                .timestamp(System.currentTimeMillis()).build()
+                );
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
