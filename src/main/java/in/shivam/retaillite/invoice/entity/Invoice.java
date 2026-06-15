@@ -2,13 +2,11 @@ package in.shivam.retaillite.invoice.entity;
 
 import in.shivam.retaillite.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -17,11 +15,16 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Builder
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(
+            nullable = false,
+            unique = true
+    )
     private String invoiceId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,14 +37,17 @@ public class Invoice {
     private String customerEmail;
 
 
-    private Double  subTotal;
-    private Double tax;
-    private Double grandTotal;
+    private BigDecimal subTotal;
+    private BigDecimal tax;
+    private BigDecimal grandTotal;
 
 
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    private Status status;
+    @Enumerated(EnumType.STRING)
+    private InvoiceStatus invoiceStatus;
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
     @CreationTimestamp
@@ -53,6 +59,7 @@ public class Invoice {
 
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "invoice_id")
-    private List<InvoiceItem> InvoiceItems;
-
+    private List<InvoiceItem> invoiceItems;
+    @Version
+    private Long version;
 }

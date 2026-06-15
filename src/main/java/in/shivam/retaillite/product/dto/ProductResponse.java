@@ -16,6 +16,7 @@ public class ProductResponse {
     private String productId;
     private String name;
     private BigDecimal price;
+    private BigDecimal taxRate;
     private String description;
     private String imgUrl;
     private Timestamp createdAt;

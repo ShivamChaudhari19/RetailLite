@@ -27,6 +27,7 @@ public class Product {
     private String productId;
     private String name;
     private BigDecimal price;
+    private BigDecimal taxRate;
     private String description;
     private String imageKey;
     @CreationTimestamp

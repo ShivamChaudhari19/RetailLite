@@ -1,6 +1,6 @@
 package in.shivam.retaillite.invoice.entity;
 
-public enum Status {
+public enum InvoiceStatus {
     PENDING,
     COMPLETED,
     CANCELED

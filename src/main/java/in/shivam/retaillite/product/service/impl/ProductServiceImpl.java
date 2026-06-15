@@ -124,8 +124,9 @@ public class ProductServiceImpl implements ProductService {
         return ProductResponse.builder()
                 .productId(savedProduct.getProductId())
                 .name(savedProduct.getName())
-                .price(savedProduct.getPrice()).
-                description(savedProduct.getDescription())
+                .price(savedProduct.getPrice())
+                .taxRate(savedProduct.getTaxRate())
+                .description(savedProduct.getDescription())
                 .imgUrl(
                         storageService.getFileUrl(savedProduct.getImageKey())
                 ).createdAt(savedProduct.getCreatedAt())
@@ -147,6 +148,7 @@ public class ProductServiceImpl implements ProductService {
                 .productId(UUID.randomUUID().toString())
                 .name(request.getName())
                 .price(request.getPrice())
+                .taxRate(request.getTaxRate())
                 .description(request.getDescription())
                 .imageKey(imageKey)
                 .category(category)
