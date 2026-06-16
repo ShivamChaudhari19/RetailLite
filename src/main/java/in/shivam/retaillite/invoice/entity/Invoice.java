@@ -1,5 +1,8 @@
 package in.shivam.retaillite.invoice.entity;
 
+import in.shivam.retaillite.common.enums.PaymentMethod;
+import in.shivam.retaillite.common.enums.PaymentStatus;
+import in.shivam.retaillite.payment.entity.Payment;
 import in.shivam.retaillite.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,12 +46,10 @@ public class Invoice {
 
 
     @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
-
-    @Enumerated(EnumType.STRING)
     private InvoiceStatus invoiceStatus;
-    @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus;
+
+    @OneToMany(mappedBy = "invoice", cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    private List<Payment> payment;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -58,7 +59,7 @@ public class Invoice {
     private Timestamp updatedAt;
 
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
-    @JoinColumn(name = "invoice_id")
+    @JoinColumn(name = "invoiceId")
     private List<InvoiceItem> invoiceItems;
     @Version
     private Long version;

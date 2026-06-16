@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @AllArgsConstructor
-@Table(name = "tbl_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

@@ -34,13 +34,13 @@ public class S3Config {
 //    @Bean
 //    public S3Presigner s3Presigner(){
 //        AwsBasicCredentials credentials=
-//                AwsBasicCredentials.create(
+//                AwsBasicCredentials.pay(
 //                        awsProperties.accessKey(),
 //                        awsProperties.secretKey()
 //                );
 //        return S3Presigner.builder()
 //                .region(Region.of(awsProperties.region()))
-//                .credentialsProvider(StaticCredentialsProvider.create(
+//                .credentialsProvider(StaticCredentialsProvider.pay(
 //                        credentials
 //                ))
 //                .build();

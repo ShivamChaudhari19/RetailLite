@@ -7,6 +7,7 @@ import in.shivam.retaillite.inventory.dto.ThresholdUpdateRequest;
 import in.shivam.retaillite.inventory.entity.Inventory;
 import in.shivam.retaillite.inventory.exception.QuantityOutOfBoundException;
 import in.shivam.retaillite.inventory.repository.InventoryRepository;
+import in.shivam.retaillite.product.entity.Product;
 import in.shivam.retaillite.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -111,6 +112,25 @@ public class InventoryServiceImpl implements InventoryService{
         inventory.setLowStockThreshold(threshold.getThreshold());
         Inventory updatedInventory = inventoryRepository.save(inventory);
         return toInventoryResponse(updatedInventory);
+    }
+
+    @Override
+    public void validate(Product product, Integer quantity) {
+        Inventory inventory=inventoryRepository.findByProduct(product)
+                .orElseThrow(()->new ResourceNotFoundException("Product not found."));
+        if (inventory.getAvailableQuantity()<quantity){
+            throw new QuantityOutOfBoundException("Stock is running out......plz try check again some time.....");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deductStock(Product product, Integer quantity) {
+            Inventory inventory=inventoryRepository.findByProduct(product)
+                    .orElseThrow(()->new ResourceNotFoundException("Product not found.."));
+            Integer inventoryAvailableQuantity=inventory.getAvailableQuantity();
+            inventory.setAvailableQuantity(inventoryAvailableQuantity-quantity);
+            inventoryRepository.save(inventory);
     }
 
     private InventoryResponse toInventoryResponse(Inventory inventory){

@@ -6,7 +6,7 @@ public final class AuthConstants {
             "/v3/api-docs/**",
             "/auth/login",
             "/auth/encode",
-            "/uploads"
+            "/uploads/**"
     };
     public static String[] ADMIN_URL={
             "/user/**",

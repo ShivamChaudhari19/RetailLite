@@ -3,6 +3,7 @@ package in.shivam.retaillite.inventory.service;
 import in.shivam.retaillite.inventory.dto.StockUpdateRequest;
 import in.shivam.retaillite.inventory.dto.InventoryResponse;
 import in.shivam.retaillite.inventory.dto.ThresholdUpdateRequest;
+import in.shivam.retaillite.product.entity.Product;
 import org.springframework.data.domain.Page;
 
 
@@ -21,4 +22,8 @@ public interface InventoryService {
     List<InventoryResponse> lowStock();
 
     InventoryResponse setThreshold(String productId, ThresholdUpdateRequest threshold);
+
+    void validate(Product product, Integer quantity);
+
+    void deductStock(Product product, Integer quantity);
 }

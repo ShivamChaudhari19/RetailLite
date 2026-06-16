@@ -102,18 +102,18 @@ public class GlobalExceptionHandler {
                                 timestamp(System.currentTimeMillis()).build()
                 );
     }
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(Exception e){
-        log.error("{}\n{}",e.getMessage(),e.getClass());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(
-                        ErrorResponse.builder()
-                                .error("Internal Server Error")
-                                .message("Contact Administration to fetch help")
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value()).
-                                timestamp(System.currentTimeMillis()).build()
-                );
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorResponse> handleGlobalException(Exception e){
+//        log.error("{}\n{}",e.getMessage(),e.getClass());
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(
+//                        ErrorResponse.builder()
+//                                .error("Internal Server Error")
+//                                .message("Contact Administration to fetch help")
+//                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value()).
+//                                timestamp(System.currentTimeMillis()).build()
+//                );
+//    }
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException e){
 

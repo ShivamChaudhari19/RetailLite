@@ -1,4 +1,4 @@
-package in.shivam.retaillite.invoice.entity;
+package in.shivam.retaillite.common.enums;
 
 public enum PaymentStatus {
     PENDING,
