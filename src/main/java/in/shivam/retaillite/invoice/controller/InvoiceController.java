@@ -20,4 +20,39 @@ public class InvoiceController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(invoiceService.createInvoice(request));
     }
+
+    @GetMapping
+    public ResponseEntity<Page<InvoiceResponse>> invoices(
+            @RequestParam
+            Integer page,
+            @RequestParam
+            Integer size,
+            @RequestParam
+            String sorBy,
+            @RequestParam
+            String orderedBy
+    ){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(invoiceService.findAll(page,size,sorBy,orderedBy));
+    }
+
+    @GetMapping("/{invoiceId}")
+    public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable String invoiceId)
+    {
+        return ResponseEntity.ok(invoiceService.findInvoice(invoiceId));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<InvoiceResponse>> getInvoiceByStatus(
+            @RequestParam
+            Integer page,
+            @RequestParam
+            Integer size,
+            @RequestParam
+            String status
+    ){
+        return ResponseEntity.ok(
+                invoiceService.findByInvoiceStatus(page,size,status)
+        );
+    }
 }
