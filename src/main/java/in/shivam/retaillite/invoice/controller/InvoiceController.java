@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class InvoiceController {
     private final InvoiceService invoiceService;
-    @PostMapping("/create")
+    @PostMapping("/invoice")
     public ResponseEntity<InvoiceResponse> create(@RequestBody
                                                   InvoiceRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
