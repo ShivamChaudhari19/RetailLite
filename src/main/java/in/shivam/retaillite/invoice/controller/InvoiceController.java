@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/invoices")
 public class InvoiceController {
     private final InvoiceService invoiceService;
     @PostMapping("/invoice")
