@@ -9,7 +9,6 @@ public record InvoiceRequest(
         String customerName,
         String customerNumber,
         String customerEmail,
-        PaymentMethod paymentMethod,
         List<InvoiceItemRequest> items
 ) {
 }
