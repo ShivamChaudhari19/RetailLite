@@ -132,4 +132,45 @@ public class InvoiceServiceImpl implements InvoiceService {
         log.debug("Invoice is saved with PENDING status.");
         return invoiceMapper.toInvoiceResponse(placedOrder);
     }
+
+    @Override
+    public Page<InvoiceResponse> findByInvoiceStatus(
+            Integer page,
+            Integer size,
+            String invoiceStatus
+    ) {
+        Pageable pageable= PageRequest.of(page,size);
+        Page<Invoice> invoices=invoiceRepository.findByInvoiceStatus(pageable, InvoiceStatus.valueOf(invoiceStatus));
+        return invoices.map(invoiceMapper::toInvoiceResponse);
+    }
+
+    @Override
+    public Page<InvoiceResponse> findAll(
+            Integer page,
+            Integer size,
+            String sortBy,
+            String orderedBy
+    ) {
+        List<String> allowedSort= Arrays.asList(
+                "invoiceid",
+                "user",
+                "grandtotal",
+                "invoicestatus",
+                "createdat" ,
+                "updatedat"
+        );
+        if (!allowedSort.contains(sortBy.toLowerCase())) sortBy="updatedat";
+        Sort sort=orderedBy.equalsIgnoreCase("ASC")? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+        Pageable pageable=PageRequest.of(page,size,sort);
+        Page<Invoice> invoices=invoiceRepository.findAll(pageable);
+        return invoices.map(invoiceMapper::toInvoiceResponse);
+    }
+
+    @Override
+    public InvoiceResponse findInvoice(String invoiceId) {
+        return invoiceMapper.toInvoiceResponse(
+                invoiceRepository.findByInvoiceId(invoiceId)
+                        .orElseThrow(()->new ResourceNotFoundException("Invoice Not Found....."))
+        );
+    }
 }
