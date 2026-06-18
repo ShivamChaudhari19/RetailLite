@@ -4,7 +4,7 @@ import in.shivam.retaillite.common.exception.ResourceNotFoundException;
 import in.shivam.retaillite.inventory.entity.Inventory;
 import in.shivam.retaillite.inventory.exception.QuantityOutOfBoundException;
 import in.shivam.retaillite.inventory.repository.InventoryRepository;
-import in.shivam.retaillite.invoice.InvoiceRepository;
+import in.shivam.retaillite.invoice.repository.InvoiceRepository;
 import in.shivam.retaillite.invoice.dto.InvoiceRequest;
 import in.shivam.retaillite.invoice.dto.InvoiceResponse;
 import in.shivam.retaillite.invoice.entity.Invoice;
