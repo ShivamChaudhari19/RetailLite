@@ -1,0 +1,37 @@
+package in.shivam.retaillite.payment.mapper;
+
+import in.shivam.retaillite.common.enums.PaymentStatus;
+import in.shivam.retaillite.invoice.entity.Invoice;
+import in.shivam.retaillite.payment.dto.PaymentRequest;
+import in.shivam.retaillite.payment.dto.PaymentResponse;
+import in.shivam.retaillite.payment.entity.Payment;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
+
+@Component
+public class PaymentMapper {
+    public PaymentResponse toPaymentResponse(Payment savedPayment) {
+        return PaymentResponse.builder()
+                .transactionId(savedPayment.getTransactionId())
+                .invoiceId(savedPayment.getInvoice().getInvoiceId())
+                .paymentmethod(savedPayment.getPaymentmethod())
+                .paymentStatus(savedPayment.getPaymentStatus())
+                .amount(savedPayment.getInvoice().getGrandTotal())
+                .createdAt(savedPayment.getCreatedAt())
+                .build();
+    }
+
+    public Payment toPayment(
+            PaymentRequest request,
+            PaymentStatus paymentStatus,
+            Invoice invoice
+    ) {
+        return Payment.builder()
+                .transactionId(UUID.randomUUID().toString())
+                .invoice(invoice)
+                .paymentmethod(request.paymentMethod())
+                .paymentStatus(paymentStatus)
+                .build();
+    }
+}
