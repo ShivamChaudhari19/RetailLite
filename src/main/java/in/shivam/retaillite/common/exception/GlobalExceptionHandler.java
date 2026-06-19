@@ -1,6 +1,7 @@
 package in.shivam.retaillite.common.exception;
 
 import in.shivam.retaillite.category.exception.CategoryAlreadyExists;
+import in.shivam.retaillite.payment.InvoiceAlreadyPaidException;
 import in.shivam.retaillite.user.exception.UserAlreadyExists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
