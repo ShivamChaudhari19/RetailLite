@@ -160,4 +160,11 @@ public class GlobalExceptionHandler {
                                 .timestamp(System.currentTimeMillis()).build()
                 );
     }
+
+    @ExceptionHandler(InvoiceAlreadyPaidException.class)
+    public ResponseEntity<ErrorResponse> handleInvoiceAlreadyPaidException(InvoiceAlreadyPaidException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.builder()
+                        .error("InvoiceAlreadyPaidException").message(e.getMessage()).status(HttpStatus.CONFLICT.value()).timestamp(System.currentTimeMillis()).build());
+    }
 }
