@@ -42,14 +42,14 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceService.findInvoice(invoiceId));
     }
 
-    @GetMapping
+    @GetMapping("/status/{status}")
     public ResponseEntity<Page<InvoiceResponse>> getInvoiceByStatus(
+            @PathVariable
+            String status, //Allowed values paid, canceled, pending
             @RequestParam
             Integer page,
             @RequestParam
-            Integer size,
-            @RequestParam
-            String status
+            Integer size
     ){
         return ResponseEntity.ok(
                 invoiceService.findByInvoiceStatus(page,size,status)
