@@ -18,6 +18,5 @@ public record PaymentResponse(
         PaymentMethod paymentmethod,
         PaymentStatus paymentStatus,
         BigDecimal amount,
-        Timestamp createdAt,
-        String message
+        Timestamp createdAt
 ) {}
