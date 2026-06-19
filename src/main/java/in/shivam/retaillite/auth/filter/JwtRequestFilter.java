@@ -27,10 +27,25 @@ import java.io.IOException;
 @Component
 
 public class JwtRequestFilter extends OncePerRequestFilter {
+    private static final String BEARER_PREFIX="Bearer ";
+    private static final Logger log= LoggerFactory.getLogger(JwtRequestFilter.class);
+
+    @Qualifier("handlerExceptionResolver")
+    private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private static final Logger log= LoggerFactory.getLogger(JwtRequestFilter.class);
-    private static final String BEARER_PREFIX="Bearer ";
+
+
+    public JwtRequestFilter(
+            JwtService jwtService,
+            UserDetailsService userDetailsService,
+            HandlerExceptionResolver handlerExceptionResolver
+    ) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+        this.handlerExceptionResolver = handlerExceptionResolver;
+    }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -70,11 +85,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }catch (ExpiredJwtException exception){
                 SecurityContextHolder.clearContext();
                 log.warn("Jwt token expired {}",exception.getMessage());
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"JWT Expired");
+//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"JWT Expired");
+                handlerExceptionResolver.resolveException(request,response,null,exception);
             }catch (JwtException exception){
                 SecurityContextHolder.clearContext();
                 log.warn("Jwt processing failed {}",exception.getMessage());
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Invalid Jwt");
+//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Invalid Jwt");
+                handlerExceptionResolver.resolveException(request,response,null,exception);
+            }catch (DisabledException exception){
+                handlerExceptionResolver.resolveException(request,response,null,exception);
             }
     }
 
