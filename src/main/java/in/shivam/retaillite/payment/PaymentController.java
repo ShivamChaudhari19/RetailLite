@@ -2,6 +2,7 @@ package in.shivam.retaillite.payment;
 
 import in.shivam.retaillite.payment.dto.PaymentRequest;
 import in.shivam.retaillite.payment.dto.PaymentResponse;
+import in.shivam.retaillite.payment.service.PaymentOrchestrator;
 import in.shivam.retaillite.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/payment")
 public class PaymentController {
 
-    private final PaymentService paymentService;
+    private final PaymentOrchestrator paymentOrchestrator;
     @PostMapping("/pay")
     public ResponseEntity<PaymentResponse> pay(
             @RequestBody
             PaymentRequest request
     ){
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(paymentService.pay(request));
+                .body(paymentOrchestrator.processInvoicePayment(request));
     }
 }
