@@ -69,7 +69,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                         if (!userDetails.isEnabled()){
 
-                            log.info("disabled user is trying to authenticate");
+                            log.warn("disabled user is trying to authenticate");
                             throw new DisabledException(
                                     "Account has been disabled. Contact admin for help"
                             );
