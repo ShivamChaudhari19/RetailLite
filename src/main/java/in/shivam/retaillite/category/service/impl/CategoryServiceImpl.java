@@ -49,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
     ) {
         List<String> allowedSorting= Arrays.asList(
                 "id",
-                "userId",
+                "userid",
                 "name"
         );
         if (!allowedSorting.contains(sortBy.toLowerCase())) sortBy="id";
