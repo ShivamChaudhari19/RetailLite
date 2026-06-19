@@ -161,7 +161,15 @@ public class GlobalExceptionHandler {
                                 .timestamp(System.currentTimeMillis()).build()
                 );
     }
-
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ErrorResponse> handleDisabledException(DisabledException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        ErrorResponse.builder()
+                                .error("user not found").message(e.getMessage()).status(HttpStatus.UNAUTHORIZED.value())
+                                .timestamp(System.currentTimeMillis()).build()
+                );
+    }
     @ExceptionHandler(InvoiceAlreadyPaidException.class)
     public ResponseEntity<ErrorResponse> handleInvoiceAlreadyPaidException(InvoiceAlreadyPaidException e){
         return ResponseEntity.status(HttpStatus.CONFLICT)
