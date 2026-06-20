@@ -144,6 +144,13 @@ public class InvoiceServiceImpl implements InvoiceService {
             Integer size,
             String invoiceStatus
     ) {
+        invoiceStatus=invoiceStatus.toLowerCase();
+        invoiceStatus=switch (invoiceStatus){
+            case "canceled"->"CANCELED";
+            case "pending"-> "PENDING";
+            default -> "PAID";
+        };
+
         Pageable pageable= PageRequest.of(page,size);
         Page<Invoice> invoices=invoiceRepository.findByInvoiceStatus(pageable, InvoiceStatus.valueOf(invoiceStatus));
         return invoices.map(invoiceMapper::toInvoiceResponse);
@@ -156,18 +163,20 @@ public class InvoiceServiceImpl implements InvoiceService {
             String sortBy,
             String orderedBy
     ) {
-        List<String> allowedSort= Arrays.asList(
-                "invoiceid",
-                "user",
-                "grandtotal",
-                "invoicestatus",
-                "createdat" ,
-                "updatedat"
-        );
-        if (!allowedSort.contains(sortBy.toLowerCase())) sortBy="updatedat";
+        if (sortBy==null) sortBy="invoiceId";
+        sortBy=switch (sortBy.toLowerCase()){
+            case "user"->"user";
+            case "grandtotal"->"grandTotal";
+            case "invoicestatus"->"invoiceStatus";
+            case "createdat"->"createdAt";
+            case "updatedat"->"updatedAt";
+            default->"invoiceId";
+        };
+
         Sort sort=orderedBy.equalsIgnoreCase("ASC")? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
         Pageable pageable=PageRequest.of(page,size,sort);
-        Page<Invoice> invoices=invoiceRepository.findAll(pageable);
+//        Page<Invoice> invoices=invoiceRepository.findAll(pageable);
+        Page<Invoice> invoices= invoiceRepository.findAllInvoiceAndUsers(pageable);
         return invoices.map(invoiceMapper::toInvoiceResponse);
     }
 

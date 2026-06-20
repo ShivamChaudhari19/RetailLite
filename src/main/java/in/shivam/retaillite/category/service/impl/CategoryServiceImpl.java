@@ -47,12 +47,14 @@ public class CategoryServiceImpl implements CategoryService {
             String sortBy,
             String orderedBy
     ) {
-        List<String> allowedSorting= Arrays.asList(
-                "id",
-                "userid",
-                "name"
-        );
-        if (!allowedSorting.contains(sortBy.toLowerCase())) sortBy="id";
+        if (sortBy==null) sortBy="categoryId";
+        sortBy=switch (sortBy.toLowerCase()){
+            case "name"->"name";
+            case "createdat"->"createdAt";
+            case "updatedat"->"updatedAt";
+            default -> "categoryId";
+
+        };
         Sort sort=orderedBy.equalsIgnoreCase("asc")
                 ?Sort.by(sortBy).ascending()
                 :Sort.by(sortBy).descending();

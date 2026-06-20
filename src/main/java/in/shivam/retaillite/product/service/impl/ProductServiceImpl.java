@@ -107,12 +107,12 @@ public class ProductServiceImpl implements ProductService {
             String sortBy,
             String orderedBy
     ) {
-        List<String> allowedSortBy= Arrays.asList(
-                "name",
-                "productId",
-                "id"
-        );
-        if (!allowedSortBy.contains(sortBy)) sortBy="name";
+        if (sortBy==null) sortBy="productId";
+        sortBy=switch (sortBy.toLowerCase()){
+            case "productid"-> "productId";
+            default -> "name";
+        };
+
         Sort sort= orderedBy.equalsIgnoreCase("asc")?
                 Sort.by(sortBy).ascending():
                 Sort.by(sortBy).descending();

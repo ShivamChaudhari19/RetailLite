@@ -51,14 +51,15 @@ public class UserServiceImpl implements UserService {
             String sortBy,
             String direction
     ){
-        List<String> allowedFields= Arrays.asList(
-                "id",
-                "name",
-                "role",
-                "username",
-                "createdAt"
-        );
-        if(!allowedFields.contains(sortBy)) sortBy="id";
+        if (sortBy==null) sortBy="userId";
+        sortBy= switch (sortBy.toLowerCase()){
+            case "name"->"name";
+            case "role"->"role";
+            case "username"->"username";
+            case "createdat"->"createdAt";
+            case "updatedat"->"updatedAt";
+            default-> "userId";
+        };
 
         Sort sort=direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()

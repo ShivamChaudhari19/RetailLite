@@ -23,13 +23,13 @@ public class InvoiceController {
 
     @GetMapping
     public ResponseEntity<Page<InvoiceResponse>> invoices(
-            @RequestParam
+            @RequestParam(defaultValue = "0")
             Integer page,
-            @RequestParam
+            @RequestParam(defaultValue = "15")
             Integer size,
-            @RequestParam
+            @RequestParam(defaultValue = "invoiceId")
             String sorBy,
-            @RequestParam
+            @RequestParam(defaultValue = "asc")
             String orderedBy
     ){
         return ResponseEntity.status(HttpStatus.OK)
@@ -46,9 +46,9 @@ public class InvoiceController {
     public ResponseEntity<Page<InvoiceResponse>> getInvoiceByStatus(
             @PathVariable
             String status, //Allowed values paid, canceled, pending
-            @RequestParam
+            @RequestParam(defaultValue = "0")
             Integer page,
-            @RequestParam
+            @RequestParam(defaultValue = "15")
             Integer size
     ){
         return ResponseEntity.ok(

@@ -57,14 +57,16 @@ public class InventoryServiceImpl implements InventoryService{
             String sortBy,
             String orderedBy
     ) {
-        List<String> allowedSortBy= Arrays.asList(
-                "inventoryId",
-                "productId",
-                "availableQuantity",
-                "lowStockThreshold",
-                "updatedAt"
-        );
-        if (!allowedSortBy.contains(sortBy)) sortBy="availableQuantity";
+
+        if (sortBy==null) sortBy="inventoryId";
+        sortBy= switch (sortBy.toLowerCase()){
+            case "inventoryid" ->"inventoryId";
+            case "productid"->"productId";
+            case "lowstockthreshold"->"lowStockThreshold";
+            case "updatedat"->"updatedAt";
+            default -> "availableQuantity";
+        };
+
         Sort sort="ASC".equalsIgnoreCase(orderedBy)?
                 Sort.by(sortBy).ascending():
                 Sort.by(sortBy).descending();
