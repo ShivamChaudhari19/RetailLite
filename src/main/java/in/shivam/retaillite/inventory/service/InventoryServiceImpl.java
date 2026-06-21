@@ -130,6 +130,10 @@ public class InventoryServiceImpl implements InventoryService{
     public void deductStock(Product product, Integer quantity) {
             Inventory inventory=inventoryRepository.findByProduct(product)
                     .orElseThrow(()->new ResourceNotFoundException("Product not found.."));
+        if (inventory.getAvailableQuantity()-quantity<0){
+            log.warn("Available quantity is {} and remove quantity is {}",inventory.getAvailableQuantity(),quantity.getQuantity());
+            throw new QuantityOutOfBoundException("Quantity"+quantity+" is greater than available quantity");
+        }
             Integer inventoryAvailableQuantity=inventory.getAvailableQuantity();
             inventory.setAvailableQuantity(inventoryAvailableQuantity-quantity);
             inventoryRepository.save(inventory);
