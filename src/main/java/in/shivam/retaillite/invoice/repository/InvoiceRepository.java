@@ -10,7 +10,35 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
+    @Query(
+            value = """
+                        SELECT i from Invoice i
+                            JOIN FETCH i.user
+                            JOIN FETCH i.invoiceItems items
+                            JOIN FETCH items.product
+                        WHERE i.invoiceId=:invoiceId"""
+    )
     Optional<Invoice> findByInvoiceId(String invoiceId);
-    List<Invoice> findAll();
+
+    @Query(
+            value = """
+                        SELECT i FROM Invoice i
+                            JOIN FETCH i.user
+                            JOIN FETCH i.invoiceItems items
+                            JOIN FETCH items.product
+                        WHERE invoiceStatus=:invoiceStatus""",
+            countQuery = "SELECT count(i) FROM Invoice i"
+    )
     Page<Invoice> findByInvoiceStatus(Pageable pageable,InvoiceStatus invoiceStatus);
+
+    @Query(
+            value= """
+                       SELECT i FROM Invoice i
+                       JOIN FETCH i.user
+                       JOIN FETCH i.invoiceItems items
+                       JOIN FETCH items.product""",
+            countQuery="SELECT count(i) FROM Inventory i"
+    )
+    Page<Invoice> findAllInvoiceAndUsers(Pageable pageable);
+    
 }
