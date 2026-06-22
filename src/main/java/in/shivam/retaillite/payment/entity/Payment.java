@@ -31,7 +31,7 @@ public class Payment {
     private Invoice invoice;
 
     @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentmethod;
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;

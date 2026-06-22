@@ -15,7 +15,7 @@ public class PaymentMapper {
         return PaymentResponse.builder()
                 .transactionId(savedPayment.getTransactionId())
                 .invoiceId(savedPayment.getInvoice().getInvoiceId())
-                .paymentmethod(savedPayment.getPaymentmethod())
+                .paymentMethod(savedPayment.getPaymentMethod())
                 .paymentStatus(savedPayment.getPaymentStatus())
                 .amount(savedPayment.getInvoice().getGrandTotal())
                 .createdAt(savedPayment.getCreatedAt())
@@ -30,7 +30,7 @@ public class PaymentMapper {
         return Payment.builder()
                 .transactionId(UUID.randomUUID().toString())
                 .invoice(invoice)
-                .paymentmethod(request.paymentMethod())
+                .paymentMethod(request.paymentMethod())
                 .paymentStatus(paymentStatus)
                 .build();
     }
