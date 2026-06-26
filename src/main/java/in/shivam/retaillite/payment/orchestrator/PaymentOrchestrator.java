@@ -133,7 +133,7 @@ public class PaymentOrchestrator {
         //if paymentStatus is Failed set Invoice status to pending
         //if paymentStatus is PENDING
         //if paymentStatus is REFUNDED
-        if ("SUCCESS".equals(paymentStatus.name())){
+        if (payment.getPaymentStatus()==PaymentStatus.SUCCESS){
 
             log.debug("Payment Successful.....");
 
@@ -141,20 +141,13 @@ public class PaymentOrchestrator {
             //deduct stock
             invoice.getInvoiceItems().forEach(invoiceItem -> inventoryService.deductStock(invoiceItem.getProduct(),invoiceItem.getQuantity()));
 
-        }else if ("FAILED".equals(paymentStatus.name())){
+        }else if (payment.getPaymentStatus()==PaymentStatus.FAILED){
             log.debug("Payment failed......");
             invoice.setInvoiceStatus(InvoiceStatus.PENDING);
         }
-
-        Payment payment= paymentMapper.toPayment(request,paymentStatus,invoice);
-        Payment savedPayment=paymentRepository.save(payment);
-        invoiceRepository.save(invoice);
-
-        return paymentMapper.toPaymentResponse(savedPayment);
-
-
-
-
-
+    }
+    private Payment findPendingPaymentByInvoiceId(String invoiceId){
+        return paymentRepository.findPendingPaymentByInvoiceId(invoiceId)
+                .orElse(null);
     }
 }
