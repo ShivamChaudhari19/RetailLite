@@ -87,7 +87,7 @@ public class PaymentOrchestrator {
     @Transactional
     public RefundResponse processInvoiceRefund(RefundRequest request) {
 
-        PaymentStatus paymentStatus =paymentService.pay(invoice.getGrandTotal());
+        Invoice invoice=getInvoiceByInvoiceId(request.invoiceId());
 
         invoiceValidation.validateCanRefund(invoice);
 
