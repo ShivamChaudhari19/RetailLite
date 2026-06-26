@@ -40,10 +40,21 @@ public class PaymentOrchestrator {
             throw new InvoiceAlreadyPaidException("Invoice is already paid....");
         }
 
-        //check if the invoice is canceled
-        if ("CANCELED".equals(invoice.getInvoiceStatus().name())){
-            log.debug("Invoice is canceled do not process Invoice");
-            throw new IllegalStateException("This Invoice is canceled...");
+
+        //Find existing PENDING payment if present
+        Payment pendingPayment=findPendingPaymentByInvoiceId(invoice.getInvoiceId());
+        Payment payment;
+        if (pendingPayment==null){
+            //create a partial  payment with pending paymentStatus
+            payment=paymentMapper.toPendingPayment(invoice,request);
+        }else if (
+                !(pendingPayment.getPaymentMethod()==request.paymentMethod()) || isExpired(pendingPayment)
+        ){
+                pendingPayment.setPaymentStatus(PaymentStatus.EXPIRED);
+                paymentRepository.save(pendingPayment);
+                payment=paymentMapper.toPendingPayment(invoice,request);
+        } else {
+            payment=pendingPayment;
         }
 
         //validate Stock
@@ -51,6 +62,30 @@ public class PaymentOrchestrator {
         invoice.getInvoiceItems().forEach((invoiceItem -> inventoryService.validate(invoiceItem.getProduct(),invoiceItem.getQuantity())));
 
         PaymentService paymentService=paymentFactory.getPaymentService(request.paymentMethod().name());
+        payment =paymentService.pay(payment);
+
+        handlePayResult(payment,invoice);
+
+
+
+//        Payment payment= paymentMapper.toPayment(request,paymentStatus,invoice);
+        Payment savedPayment=paymentRepository.save(payment);
+        // no need to write an external save because of Hibernate's dirty checking
+        //Added to improve readability
+        invoiceRepository.save(invoice);
+        //todo: if the runtime exception occurred after payment is successful then
+        // handle the payment at the failure
+
+        return paymentMapper.toPaymentResponse(savedPayment);
+    }
+
+    private boolean isExpired(Payment payment) {
+        Instant expirationTime=payment.getCreatedAt().toInstant().plus(paymentProperties.pending().timeout(), ChronoUnit.MINUTES);
+        return !Instant.now().isBefore(expirationTime);
+    }
+
+    @Transactional
+    public RefundResponse processInvoiceRefund(RefundRequest request) {
 
         PaymentStatus paymentStatus =paymentService.pay(invoice.getGrandTotal());
 
