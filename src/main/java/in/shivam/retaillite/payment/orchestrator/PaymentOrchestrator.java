@@ -89,6 +89,46 @@ public class PaymentOrchestrator {
 
         PaymentStatus paymentStatus =paymentService.pay(invoice.getGrandTotal());
 
+        invoiceValidation.validateCanRefund(invoice);
+
+        Payment payment  =paymentRepository.findByInvoice_invoiceIdAndPaymentStatus(invoice.getInvoiceId(),PaymentStatus.SUCCESS)
+                .orElseThrow(()->new ResourceNotFoundException("Success Payment not found!!!"));
+
+        PaymentMethod method=payment.getPaymentMethod();
+        PaymentService  paymentService=paymentFactory.getPaymentService(method.name());
+        payment=paymentService.refund(payment);
+
+        if (payment.getPaymentStatus()==PaymentStatus.REFUNDED){
+            addItemStock(invoice.getInvoiceItems());
+            invoice.setInvoiceStatus(InvoiceStatus.CANCELED);
+        }
+        paymentRepository.save(payment);
+        invoiceRepository.save(invoice);
+        return  RefundResponse.builder()
+                .transactionId(payment.getTransactionId())
+                .invoiceId(invoice.getInvoiceId())
+                .paymentMethod(payment.getPaymentMethod())
+                .paymentStatus(payment.getPaymentStatus())
+                .amount(invoice.getGrandTotal())
+                .createdAt(payment.getCreatedAt())
+                .build();
+    }
+
+    private void addItemStock(List<InvoiceItem> invoiceItems) {
+        invoiceItems.forEach(invoiceItem -> inventoryService.addStock(invoiceItem.getProduct(),invoiceItem.getQuantity()));
+    }
+
+    private Invoice getInvoiceByInvoiceId(String invoiceId){
+        return invoiceRepository.findByInvoiceId(invoiceId)
+                .orElseThrow(()->new ResourceNotFoundException("Invoice not found with invoice Id: "+invoiceId));
+    }
+
+
+    private void validateItemStock(List<InvoiceItem> invoiceItems){
+        invoiceItems.forEach(invoiceItem -> inventoryService.validate(invoiceItem.getProduct(),invoiceItem.getQuantity()));
+
+    }
+    private void handlePayResult(Payment payment,Invoice invoice){
         //if paymentStatus is Success deduct the stock
         //if paymentStatus is Failed set Invoice status to pending
         //if paymentStatus is PENDING
