@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PaymentOrchestrator {
+    private final PaymentProperties paymentProperties;
     private final PaymentRepository paymentRepository;
     private final PaymentFactory paymentFactory;
     private final InvoiceRepository invoiceRepository;

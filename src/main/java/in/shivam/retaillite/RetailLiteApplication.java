@@ -1,9 +1,9 @@
 package in.shivam.retaillite;
 
-import in.shivam.retaillite.auth.service.JwtService;
-import org.apache.catalina.core.ApplicationContext;
+import in.shivam.retaillite.payment.PaymentProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
@@ -11,7 +11,7 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 
 @SpringBootApplication
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
-
+@EnableConfigurationProperties(PaymentProperties.class)
 public class RetailLiteApplication {
 
     public static void main(String[] args) {
