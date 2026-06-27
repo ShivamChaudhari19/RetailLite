@@ -176,4 +176,17 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.builder()
                         .error("InvoiceAlreadyPaidException").message(e.getMessage()).status(HttpStatus.CONFLICT.value()).timestamp(System.currentTimeMillis()).build());
     }
+    @ExceptionHandler(QuantityOutOfBoundException.class)
+    public ResponseEntity<ErrorResponse> handleQuantityOutOfBoundException(QuantityOutOfBoundException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ErrorResponse.builder()
+                                .error("Quantity Out of Bound")
+                                .message(e.getMessage())
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .timestamp(System.currentTimeMillis())
+                                .build()
+                );
+    }
+
 }
