@@ -170,6 +170,24 @@ public class GlobalExceptionHandler {
                                 .timestamp(System.currentTimeMillis()).build()
                 );
     }
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponse> handleDisabledException(JwtException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        ErrorResponse.builder()
+                                .error("Authentication error:").message(e.getMessage()).status(HttpStatus.UNAUTHORIZED.value())
+                                .timestamp(System.currentTimeMillis()).build()
+                );
+    }
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse> handleDisabledException(ExpiredJwtException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        ErrorResponse.builder()
+                                .error("Authentication error:").message(e.getMessage()).status(HttpStatus.UNAUTHORIZED.value())
+                                .timestamp(System.currentTimeMillis()).build()
+                );
+    }
     @ExceptionHandler(InvoiceAlreadyPaidException.class)
     public ResponseEntity<ErrorResponse> handleInvoiceAlreadyPaidException(InvoiceAlreadyPaidException e){
         return ResponseEntity.status(HttpStatus.CONFLICT)
