@@ -206,5 +206,16 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
-
+    @ExceptionHandler(RazorpayException.class)
+    public ResponseEntity<ErrorResponse> handleRazorpayException(RazorpayException e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(
+                        ErrorResponse.builder()
+                                .error("Razorpay Exception")
+                                .message(e.getMessage())
+                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                .timestamp(System.currentTimeMillis())
+                                .build()
+                );
+    }
 }
