@@ -11,6 +11,16 @@ import java.util.UUID;
 
 @Component
 public class PaymentMapper {
+    public  Payment toPendingPayment(Invoice invoice, PaymentRequest request) {
+        return Payment.builder()
+                .transactionId(UUID.randomUUID().toString())
+                .invoice(invoice)
+                .grandTotal(invoice.getGrandTotal())
+                .paymentMethod(request.paymentMethod())
+                .paymentStatus(PaymentStatus.PENDING)
+                .build();
+    }
+
     public PaymentResponse toPaymentResponse(Payment savedPayment) {
         return PaymentResponse.builder()
                 .transactionId(savedPayment.getTransactionId())
