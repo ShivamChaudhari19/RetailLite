@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 public record PaymentResponse(
         String transactionId,
         String invoiceId,
+        BigDecimal grandTotal,
         PaymentMethod paymentMethod,
         PaymentStatus paymentStatus,
         BigDecimal amount,

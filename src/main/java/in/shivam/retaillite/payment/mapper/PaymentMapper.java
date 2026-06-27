@@ -25,6 +25,7 @@ public class PaymentMapper {
         return PaymentResponse.builder()
                 .transactionId(savedPayment.getTransactionId())
                 .invoiceId(savedPayment.getInvoice().getInvoiceId())
+                .grandTotal(savedPayment.getGrandTotal())
                 .paymentMethod(savedPayment.getPaymentMethod())
                 .paymentStatus(savedPayment.getPaymentStatus())
                 .amount(savedPayment.getInvoice().getGrandTotal())
