@@ -106,7 +106,7 @@ public class PaymentOrchestrator {
         paymentRepository.save(payment);
         invoiceRepository.save(invoice);
         return  RefundResponse.builder()
-                .transactionId(payment.getTransactionId())
+                .transactionId(payment.getPaymentId())
                 .invoiceId(invoice.getInvoiceId())
                 .paymentMethod(payment.getPaymentMethod())
                 .paymentStatus(payment.getPaymentStatus())

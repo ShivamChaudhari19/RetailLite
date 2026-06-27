@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 
 @Builder
 public record PaymentResponse(
-        String transactionId,
+        String paymentId,
         String invoiceId,
         BigDecimal grandTotal,
         PaymentMethod paymentMethod,

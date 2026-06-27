@@ -15,7 +15,6 @@ public class PaymentMapper {
         return Payment.builder()
                 .paymentId(UUID.randomUUID().toString())
                 .invoice(invoice)
-                .grandTotal(invoice.getGrandTotal())
                 .paymentMethod(request.paymentMethod())
                 .paymentStatus(PaymentStatus.PENDING)
                 .build();
@@ -25,7 +24,6 @@ public class PaymentMapper {
         return PaymentResponse.builder()
                 .transactionId(savedPayment.getPaymentId())
                 .invoiceId(savedPayment.getInvoice().getInvoiceId())
-                .grandTotal(savedPayment.getGrandTotal())
                 .paymentMethod(savedPayment.getPaymentMethod())
                 .paymentStatus(savedPayment.getPaymentStatus())
                 .amount(savedPayment.getInvoice().getGrandTotal())
@@ -39,7 +37,7 @@ public class PaymentMapper {
             Invoice invoice
     ) {
         return Payment.builder()
-                .transactionId(UUID.randomUUID().toString())
+                .paymentId(UUID.randomUUID().toString())
                 .invoice(invoice)
                 .paymentMethod(request.paymentMethod())
                 .paymentStatus(paymentStatus)
