@@ -24,7 +24,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String transactionId;
+    private String paymentId;
 
     @ManyToOne
     @JoinColumn(name = "invoiceId")

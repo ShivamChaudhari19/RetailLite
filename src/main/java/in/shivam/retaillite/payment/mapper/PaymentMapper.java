@@ -13,7 +13,7 @@ import java.util.UUID;
 public class PaymentMapper {
     public  Payment toPendingPayment(Invoice invoice, PaymentRequest request) {
         return Payment.builder()
-                .transactionId(UUID.randomUUID().toString())
+                .paymentId(UUID.randomUUID().toString())
                 .invoice(invoice)
                 .grandTotal(invoice.getGrandTotal())
                 .paymentMethod(request.paymentMethod())
@@ -23,7 +23,7 @@ public class PaymentMapper {
 
     public PaymentResponse toPaymentResponse(Payment savedPayment) {
         return PaymentResponse.builder()
-                .transactionId(savedPayment.getTransactionId())
+                .transactionId(savedPayment.getPaymentId())
                 .invoiceId(savedPayment.getInvoice().getInvoiceId())
                 .grandTotal(savedPayment.getGrandTotal())
                 .paymentMethod(savedPayment.getPaymentMethod())
