@@ -218,4 +218,12 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(InvoiceCanceledException.class)
+    public ResponseEntity<ErrorResponse> handleInvoiceCanceledException(InvoiceCanceledException e){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ErrorResponse.builder()
+                                .error("InvoiceCanceledException exception occurred").message(e.getMessage()).status(HttpStatus.OK.value()).timestamp(System.currentTimeMillis()).build()
+                );
+    }
 }
