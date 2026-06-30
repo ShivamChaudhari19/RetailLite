@@ -151,4 +151,108 @@ public class PaymentOrchestrator {
         return paymentRepository.findPendingPaymentByInvoiceId(invoiceId)
                 .orElse(null);
     }
+
+    @Transactional
+    public PaymentResponse verifyPayment(PaymentVerifyRequest request) {
+        Payment payment=findPaymentByGatewayOrderId(request.gatewayOrderId());
+
+        //idempotency
+        if (payment.getPaymentStatus()==PaymentStatus.SUCCESS){
+            return paymentResponseFactory.createResponse(payment);
+        }
+
+
+        validateCanBeVarified(payment);
+
+
+        PaymentService paymentService=paymentServiceFactory.getPaymentService(payment.getPaymentMethod().name());
+
+        payment=paymentService.verifyPayment(payment,request);
+
+        Invoice invoice=payment.getInvoice();
+
+        try {
+            
+            invoice.getInvoiceItems().forEach(invoiceItem -> inventoryService.deductStock(invoiceItem.getProduct(),invoiceItem.getQuantity()));
+        }catch(QuantityOutOfBoundException e){
+            log.warn("stock is over... Refund is initiated..");
+            payment=paymentService.refund(payment);
+            if (payment.getPaymentStatus()!=PaymentStatus.REFUNDED){
+                throw new PaymentException("Inventory deduction failed and Refund is could not be completed");
+            }
+            return paymentResponseFactory.createResponse(payment);
+        }
+        payment.markSuccess();
+        invoice.markPaid();
+        paymentRepository.save(payment);
+        invoiceRepository.save(invoice);
+
+        return paymentResponseFactory.createResponse(payment);
+    }
+
+    private void validateCanBeVarified(Payment payment) {
+        //check for the payment is failed or refunded
+        if (payment.getPaymentStatus()==PaymentStatus.FAILED ){
+            log.warn("failed payment trying to verify signature...");
+            throw new PaymentException("payment is failed try to pay again");
+        }
+        if (payment.getPaymentStatus()== PaymentStatus.REFUNDED)
+        {
+            log.warn("Refunded payment is trying to verify");
+            throw  new PaymentException("payment is Refunded...");
+        }
+    }
+
+    private Payment findPaymentByGatewayOrderId(String gatewayOrderId) {
+        return paymentRepository.findByGatewayOrderId(gatewayOrderId)
+                .orElseThrow(
+                        ()->new PaymentException("Payment not found for order id: "+gatewayOrderId)
+                );
+    }
+
+    @Transactional
+    public void verifyWebhook(String paymentId, String orderId) {
+        Payment payment = findPaymentByGatewayOrderId(orderId);
+        payment.setGatewayPaymentId(paymentId);
+
+        //idempotency
+        if (payment.getPaymentStatus() == PaymentStatus.SUCCESS) {
+            return;
+        }
+        finalizePayment(payment);
+
+        return;
+    }
+    private Payment finalizePayment(Payment payment){
+        Invoice invoice = payment.getInvoice();
+        try{
+            //check if the invoice is paid by another thread during current payment process
+            invoiceValidation.validateCanCompletePayment(invoice);
+            //deduct the invoice stock
+            invoice.getInvoiceItems().forEach(invoiceItem -> inventoryService.deductStock(invoiceItem.getProduct(), invoiceItem.getQuantity()));
+        }catch (InvoiceAlreadyPaidException e){
+            PaymentService paymentService=paymentServiceFactory.getPaymentService(payment.getPaymentMethod().name());
+            log.warn("Invoice :{} is already paid so has to refund captured amount",payment.getInvoice().getInvoiceId());
+            payment=paymentService.refund(payment);
+            if (payment.getPaymentStatus()!=PaymentStatus.REFUNDED){
+                throw new PaymentException("Refund Failed for payment: "+payment.getPaymentId());
+            }
+            return payment;
+        } catch (QuantityOutOfBoundException e) {
+            PaymentService paymentService=paymentServiceFactory.getPaymentService(payment.getPaymentMethod().name());
+            log.warn("stock is over... Refund is initiated..");
+            payment = paymentService.refund(payment);
+            if (payment.getPaymentStatus() != PaymentStatus.REFUNDED) {
+                throw new PaymentException("Inventory deduction failed and Refund is could not be completed");
+            }
+            return payment;
+        }
+
+        payment.markSuccess();
+        invoice.markPaid();
+        paymentRepository.save(payment);
+        invoiceRepository.save(invoice);
+
+        return payment;
+    }
 }
