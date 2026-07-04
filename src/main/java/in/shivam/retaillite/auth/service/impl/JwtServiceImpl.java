@@ -22,6 +22,7 @@ public class JwtServiceImpl implements JwtService {
     ){
         String SECRET_KEY="lkskdksifkdioalsiseewqesdegsdgss";
         this.key=Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        this.EXPIRATION=EXPIRATION*60*1000L;
     }
     @Override
     public String generateToken(UserDetails userDetails) {
