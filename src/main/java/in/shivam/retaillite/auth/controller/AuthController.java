@@ -29,7 +29,7 @@ public class AuthController {
     @PostMapping("/auth/encode")
     public ResponseEntity<String> encode(@RequestBody RawPassword password)
     {
-        log.info("Encoding raw password: {}",password.getPassword());
+        log.info("Encoding raw password");
         return ResponseEntity.ok(encode.encode(password.getPassword()));
     }
 }
