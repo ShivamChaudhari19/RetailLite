@@ -37,7 +37,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
                        JOIN FETCH i.user
                        JOIN FETCH i.invoiceItems items
                        JOIN FETCH items.product""",
-            countQuery="SELECT count(i) FROM Inventory i"
+            countQuery="SELECT count(i) FROM Invoice i"
     )
     Page<Invoice> findAllInvoiceAndUsers(Pageable pageable);
     
