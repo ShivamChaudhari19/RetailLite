@@ -18,7 +18,7 @@ public class JwtServiceImpl implements JwtService {
     private final SecretKey key;
     private static final long EXPIRATION=1000*60*60;
     public JwtServiceImpl(
-//            @Value("jwt.secret.key") String SECRET_KEY
+            @Value("${app.security.jwt-secret-key}") String SECRET_KEY
     ){
         String SECRET_KEY="lkskdksifkdioalsiseewqesdegsdgss";
         this.key=Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
