@@ -22,7 +22,7 @@ public class AuthController {
     @PreAuthorize(value = "permitAll()")
     @PostMapping("/auth/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request){
-        log.info("Authenticating request: {}",request);
+        log.info("Authenticating request: {}",request.getUsername());
         return ResponseEntity.ok(authService.authenticate(request));
     }
     @PreAuthorize(value = "permitAll()")
