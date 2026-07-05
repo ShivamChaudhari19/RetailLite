@@ -71,8 +71,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(String userId) throws ResourceNotFoundException {
-        User user=userRepository.findByUsername(userId).orElseThrow(()->new ResourceNotFoundException("user does not exist."));
+    public void delete(String username) throws ResourceNotFoundException {
+        User user=userRepository.findByUsername(username).orElseThrow(()->new ResourceNotFoundException("user does not exist."));
         user.setEnable(false);
 
 //        userRepository.deleteByUserId(userId).orElseThrow( ()->new ResourceNotFoundException("user does not exist."));

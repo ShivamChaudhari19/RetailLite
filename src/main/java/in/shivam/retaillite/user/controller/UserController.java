@@ -30,7 +30,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
-    public void delete(@PathVariable String userId){
+    public void delete(@Email @PathVariable String userId){
         userService.delete(userId);
     }
 
