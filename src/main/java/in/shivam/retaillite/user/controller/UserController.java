@@ -43,7 +43,7 @@ public class UserController {
             int size,
             @RequestParam(defaultValue = "id")
             String  sortBy,
-            @RequestParam(defaultValue = "ase")
+            @RequestParam(defaultValue = "asc")
             String orderedBy
 
     ){
