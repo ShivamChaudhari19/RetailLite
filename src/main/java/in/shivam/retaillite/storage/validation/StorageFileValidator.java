@@ -13,13 +13,10 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Component
 public class StorageFileValidator {
     private static final long MAX_UPLOAD_SIZE_IN_BYTES = 8L * 1024 * 1024;
-    private static final List<String> BLOCKED_EXTENSION = List.of(
-            ".exe",
-            ".bat",
-            ".cmd",
-            ".sh",
-            ".js",
-            ".msi"
+    private static final List<String> ALLOWED_EXTENSION=List.of(
+            "jpg",
+            "jpeg",
+            "pdf"
     );
     public void validate(MultipartFile file) {
         log.debug("starting storage file validation");
