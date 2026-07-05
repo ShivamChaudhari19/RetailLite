@@ -151,9 +151,20 @@ public class InvoiceServiceImpl implements InvoiceService {
             default -> "PAID";
         };
 
+        //page request form client
         Pageable pageable= PageRequest.of(page,size);
-        Page<Invoice> invoices=invoiceRepository.findByInvoiceStatus(pageable, InvoiceStatus.valueOf(invoiceStatus));
-        return invoices.map(invoiceMapper::toInvoiceResponse);
+        //find invoice items for requested page
+        Page<Invoice> pagedInvoices =invoiceRepository.findAllInvoiceByIds(pageable,InvoiceStatus.valueOf(invoiceStatus));
+        //get invoice ids from pagedInvoices
+        Set<Long> ids= pagedInvoices.stream()
+                .map(Invoice::getId)
+                .collect(Collectors.toSet());
+        //get join fetch invoices from repository using ids
+        List<Invoice> invoices=invoiceRepository.findByInvoiceIds(ids);
+        //convert invoice to page
+        Page<Invoice> page1= new PageImpl<>(invoices,pageable,pagedInvoices.getTotalElements());
+        //map invoice page to invoiceResponse
+        return page1.map(invoiceMapper::toInvoiceResponse);
     }
 
     @Override
@@ -173,11 +184,24 @@ public class InvoiceServiceImpl implements InvoiceService {
             default->"invoiceId";
         };
 
+        //sort by
         Sort sort=orderedBy.equalsIgnoreCase("ASC")? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+        //page request by client
         Pageable pageable=PageRequest.of(page,size,sort);
-//        Page<Invoice> invoices=invoiceRepository.findAll(pageable);
-        Page<Invoice> invoices= invoiceRepository.findAllInvoiceAndUsers(pageable);
-        return invoices.map(invoiceMapper::toInvoiceResponse);
+
+        //find requested pageInvoices only
+        Page<Invoice> pagedInvoices=invoiceRepository.findAllInvoices(pageable);
+        //find pagedInvoices ids
+        Set<Long> ids=pagedInvoices.stream()
+                .map(Invoice::getId)
+                .collect(Collectors.toSet());
+
+        //find invoice with JOIN FETCH users
+        List<Invoice> invoices= invoiceRepository.findAllInvoiceAndUsers(ids);
+        //create requested page from invoices
+        Page<Invoice> invoicePage=new PageImpl<>(invoices,pageable,pagedInvoices.getTotalElements());
+        //map invoice to invoiceResponse
+        return invoicePage.map(invoiceMapper::toInvoiceResponse);
     }
 
     @Override

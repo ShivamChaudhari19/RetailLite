@@ -21,15 +21,19 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
     Optional<Invoice> findByInvoiceId(String invoiceId);
 
     @Query(
+            value = "SELECT i from Invoice i where i.invoiceStatus=:invoiceStatus",
+            countQuery = "SELECT count(i) from Invoice i where i.invoiceStatus=:invoiceStatus"
+    )
+    Page<Invoice> findAllInvoiceByIds(Pageable pageable,InvoiceStatus invoiceStatus);
+    @Query(
             value = """
                         SELECT i FROM Invoice i
-                            JOIN FETCH i.user
-                            JOIN FETCH i.invoiceItems items
-                            JOIN FETCH items.product
-                        WHERE invoiceStatus=:invoiceStatus""",
-            countQuery = "SELECT count(i) FROM Invoice i"
+                        JOIN FETCH i.user
+                        JOIN FETCH i.invoiceItems items
+                        JOIN FETCH items.product
+                        WHERE i.id IN :ids"""
     )
-    Page<Invoice> findByInvoiceStatus(Pageable pageable,InvoiceStatus invoiceStatus);
+    List<Invoice> findByInvoiceIds(Set<Long> ids);
 
     @Query(
             value= """
