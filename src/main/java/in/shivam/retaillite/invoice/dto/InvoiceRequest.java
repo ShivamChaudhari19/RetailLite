@@ -14,8 +14,7 @@ public record InvoiceRequest(
         String customerNumber,
         @Email
         String customerEmail,
-        @NotNull
-        @Min(0)
+        @NotEmpty
         List<InvoiceItemRequest> items
 ) {
 }
