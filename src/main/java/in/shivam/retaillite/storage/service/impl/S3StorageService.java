@@ -59,10 +59,11 @@ public class S3StorageService implements StorageService {
 
     @Override
     public String getFileUrl(String key){
-        return "https://"
-                + awsProperties.bucketName()
-                + ".s3"
-                +"amazonaws.com/"
-                +key;
+        return  "https://"
+                +awsProperties.bucketName()
+                +".s3."
+                +awsProperties.region()
+                +".amazonaws.com/"
+                + key;
     }
 }
