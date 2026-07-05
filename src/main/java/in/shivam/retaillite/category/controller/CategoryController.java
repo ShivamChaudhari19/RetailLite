@@ -27,23 +27,17 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CategoryResponse> create(
-            @Valid @RequestPart("category") String category,
+            @Valid @RequestPart("category") CategoryRequest request,
             @RequestPart("categoryImg") MultipartFile categoryImg
     ){
-        CategoryRequest categoryRequest=null;
-        try {
-            ObjectMapper mapper=new ObjectMapper();
-             categoryRequest=mapper.readValue(category,CategoryRequest.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+
         if (categoryImg == null){
-            log.warn("file not found for category :{}\n{}",categoryRequest.getName(), getClass());
+            log.warn("file not found for category :{}\n{}",request.getName(), getClass());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "file not found");
         }
-        log.debug("Category creating for: {}", categoryRequest.getName());
+        log.debug("Category creating for: {}", request.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(categoryService.create(categoryRequest, categoryImg));
+                .body(categoryService.create(request, categoryImg));
     }
 
 
