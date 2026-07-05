@@ -67,6 +67,28 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e){
+        Map<String,String>errors=new HashMap<>();
+        e.getConstraintViolations()
+                .forEach(
+                        constraintViolation -> {
+                            String path=constraintViolation.getPropertyPath().toString();
+                            String paramName=path.substring(path.lastIndexOf('.') + 1);
+                            errors.put(paramName,constraintViolation.getMessage());
+                        }
+                );
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ErrorResponse.builder()
+                                .error(errors.toString())
+                                .message("validation failed")
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .timestamp(System.currentTimeMillis())
+                                .build()
+                );
+    }
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
