@@ -14,10 +14,13 @@ import java.sql.Timestamp;
 @Builder
 public class UserRequest {
 
+    @NotBlank
     @Size(min = 2,max = 20)
     private String name;
+    @NotBlank
     @Size(min = 6, max=16)
     private String password;
+    @NotBlank
     @Email
     private String username;
     @NotNull(message = "Role cannot be blank")

@@ -38,9 +38,9 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<Page<UserResponse>> fetch(
             @RequestParam(defaultValue = "0")
-            int page,
+            @Min(0) int page,
             @RequestParam(defaultValue = "10")
-            int size,
+            @Min(0) @Max(50)int size,
             @RequestParam(defaultValue = "id")
             String  sortBy,
             @RequestParam(defaultValue = "asc")
