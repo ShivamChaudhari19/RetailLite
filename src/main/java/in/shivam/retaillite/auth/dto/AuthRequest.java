@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-//@NoArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Getter
 @Builder
 public class AuthRequest {

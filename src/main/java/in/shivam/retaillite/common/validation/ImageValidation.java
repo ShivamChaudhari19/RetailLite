@@ -1,9 +1,7 @@
 package in.shivam.retaillite.common.validation;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -34,8 +32,9 @@ public class ImageValidation {
     public void validate(MultipartFile file){
         validateSize(file);
         validateExtension(file);
-        validateImageContent(file);
-        validateImageDimension(file);
+        BufferedImage image=extractImage(file);
+        validateImageContent(image);
+        validateImageDimension(image);
         validateContentType(file);
 
     }
@@ -77,13 +76,10 @@ public class ImageValidation {
             );
         }
     }
-    private void validateImageContent(MultipartFile file) {
-        try {
-            BufferedImage image= ImageIO.read(file.getInputStream());
+    private void validateImageContent(BufferedImage image) {
             if (image==null){
                 log.warn(
-                        "file validation failed:file is not a valid image:{}",
-                        file.getOriginalFilename()
+                        "file validation failed:file is not a valid image"
                 );
 
                 throw new ResponseStatusException(
@@ -91,22 +87,9 @@ public class ImageValidation {
                         "Corrupted or invalid image"
                 );
             }
-        } catch (IOException e) {
-            log.error(
-                    "image validation failed while reading file:{}",
-                    file.getOriginalFilename(),
-                    e
-            );
-
-            throw new ResponseStatusException(
-                    BAD_REQUEST,
-                    "Unable to process image"
-            );
-        }
     }
-    private void validateImageDimension(MultipartFile file){
-        try {
-            BufferedImage image= ImageIO.read(file.getInputStream());
+    private void validateImageDimension(BufferedImage image){
+
             if (image==null) return;
             int height=image.getHeight();
             int width=image.getWidth();
@@ -121,13 +104,17 @@ public class ImageValidation {
                         "Image dimension exceeded allowed limit"
                 );
             }
+    }
+    private BufferedImage extractImage(MultipartFile file) {
+        try {
+
+        return ImageIO.read(file.getInputStream());
         } catch (IOException e) {
             log.error(
-                    "failed to validate image dimension:{}",
+                    "failed to extract image from:{}",
                     file.getOriginalFilename(),
                     e
             );
-
             throw new ResponseStatusException(
                     BAD_REQUEST,
                     "Unable to validate image dimension"
