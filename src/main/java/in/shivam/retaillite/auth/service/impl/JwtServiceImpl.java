@@ -61,7 +61,7 @@ public class JwtServiceImpl implements JwtService {
         }
         return Collections.emptyList();
     }
-    public <T>T extractClaim(String jwt, Function<Claims,T>extractClaim){
+    private  <T>T extractClaim(String jwt, Function<Claims,T>extractClaim){
         Claims allClaims=extractAllClaims(jwt);
         return extractClaim.apply(allClaims);
     }
