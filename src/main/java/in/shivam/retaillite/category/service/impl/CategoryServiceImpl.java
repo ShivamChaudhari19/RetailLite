@@ -67,6 +67,12 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(String categoryId) throws ResourceNotFoundException {
         Category category= categoryRepository.findByCategoryId(categoryId)
                 .orElseThrow(()-> new ResourceNotFoundException("category not found: "+categoryId));
+
+        //check if category has associated products
+        if (productRepository.existsByCategory_categoryId(category.getCategoryId())){
+            log.warn("Illegal operation: category has associated products \n Delete all associated products to delete category: {}",categoryId);
+            throw new CategoryDeletionException("Illegal operation: category has associated products");
+        }
         categoryRepository.delete(category);
         try {
             storageService.delete(category.getImageKey());
