@@ -64,6 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(String categoryId) throws ResourceNotFoundException {
         Category category= categoryRepository.findByCategoryId(categoryId)
                 .orElseThrow(()-> new ResourceNotFoundException("category not found: "+categoryId));
