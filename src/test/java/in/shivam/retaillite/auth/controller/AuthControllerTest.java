@@ -66,7 +66,7 @@ public class AuthControllerTest {
     @Test
     void shouldReturn401_WhenUsernamePasswordInvalid() throws Exception {
         AuthRequest authRequest=new AuthRequest("missin.username@example.com","password");
-        String authRequestJson=new ObjectMapper().writeValueAsString(authRequest);
+        String authRequestJson=objectMapper.writeValueAsString(authRequest);
         when(authService.authenticate(any(AuthRequest.class))).thenThrow(BadCredentialsException.class   );
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
