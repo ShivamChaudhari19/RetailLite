@@ -17,8 +17,9 @@ spring:
       show-sql: true
       ddl-auto: update
   servlet:
-    multipart-max: 2MB
-    multipart-min: 0.04MB
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 10MB
   docker:
     compose:
       enabled: false
@@ -40,6 +41,8 @@ aws:
 razorpay:
   key-id: ${RAZORPAY_KEY_ID}
   key-secret: ${RAZORPAY_KEY_SECRET}
+  timeout: 10
+  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET}
 payment:
   pending:
     timeout: 15
