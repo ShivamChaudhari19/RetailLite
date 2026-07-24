@@ -6,8 +6,6 @@ import in.shivam.retaillite.user.dto.UserResponse;
 import in.shivam.retaillite.user.entity.User;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface UserService {
     UserResponse create(UserRequest user);
     User findEntityByUsername(String username)throws ResourceNotFoundException;
