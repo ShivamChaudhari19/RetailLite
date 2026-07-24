@@ -8,6 +8,7 @@ import in.shivam.retaillite.inventory.repository.InventoryRepository;
 import in.shivam.retaillite.product.dto.ProductRequest;
 import in.shivam.retaillite.product.dto.ProductResponse;
 import in.shivam.retaillite.product.entity.Product;
+import in.shivam.retaillite.product.exception.ProductAlreadyExistException;
 import in.shivam.retaillite.product.repository.ProductRepository;
 import in.shivam.retaillite.product.service.ProductService;
 import in.shivam.retaillite.product.validation.ProductImageValidation;
@@ -19,10 +20,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -51,15 +52,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse create(
             ProductRequest request,
             MultipartFile productImg
     ) {
+        log.debug("fetching category for categoryId:{}",request.getCategoryId());
+        Category category = categoryRepository.findByCategoryId(request.getCategoryId())
+                .orElseThrow(() -> (new ResourceNotFoundException("category does not exist with id: " + request.getCategoryId())));
+        log.debug("category found");
+
+        Optional<Product> existingProduct =productRepository.findByNameAndCategory_categoryId(request.getName(),request.getCategoryId());
+        if (existingProduct.isPresent()){
+            throw new ProductAlreadyExistException("Product id: "+existingProduct.get().getProductId()+"  name: "+existingProduct.get().getName()+" Already Exist");
+        }
+
         productImageValidation.validate(productImg);
         String imagekey= null;
         try {
             imagekey=storageService.upload(productImg,"product");
-            Product product=toProduct(request,imagekey);
+
+            Product product=toProduct(request,category,imagekey);
             Product savedProduct=productRepository.save(product);
             inventoryRepository.save(
                     Inventory.builder()
@@ -72,17 +85,18 @@ public class ProductServiceImpl implements ProductService {
             );
             log.info("product is saved and inventory is initialized with quantity 0");
             return toProductResponse(savedProduct);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             if (imagekey!=null){
                 log.debug("deleting file:{}\nproblem to upload product in database",imagekey);
                 storageService.delete(imagekey);
             }
-            throw e;
+            throw new RuntimeException("failed to create product!!!!! "+e.getMessage());
         }
     }
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(String productId) throws ResourceNotFoundException {
         log.debug("deleting product with productId:{}",productId);
         Product product= productRepository.findByProductId(productId)
@@ -107,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
             String sortBy,
             String orderedBy
     ) {
-        if (sortBy==null) sortBy="productId";
+
         sortBy=switch (sortBy.toLowerCase()){
             case "productid"-> "productId";
             default -> "name";
@@ -135,15 +149,8 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-    private Product toProduct(ProductRequest request, String imageKey) {
-        log.debug("fetching category for categoryId:{}",request.getCategoryId());
-        Category category = categoryRepository
-                .findByCategoryId(
-                        request.getCategoryId()
-                ).orElseThrow(
-                        () -> (new ResourceNotFoundException("category does not exist with id: " + request.getCategoryId()))
-                );
-        log.debug("category found");
+    private Product toProduct(ProductRequest request, Category category, String imageKey) {
+
         return Product.builder()
                 .productId(UUID.randomUUID().toString())
                 .name(request.getName())
