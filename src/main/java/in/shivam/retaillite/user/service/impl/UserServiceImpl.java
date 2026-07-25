@@ -72,8 +72,6 @@ public class UserServiceImpl implements UserService {
     public void delete(String username) throws ResourceNotFoundException {
         User user=userRepository.findByUsername(username).orElseThrow(()->new ResourceNotFoundException("user does not exist."));
         user.setEnable(false);
-
-//        userRepository.deleteByUserId(userId).orElseThrow( ()->new ResourceNotFoundException("user does not exist."));
     }
     private User toUserEntity(UserRequest userRequest){
         return User.builder()
