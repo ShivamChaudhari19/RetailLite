@@ -49,7 +49,6 @@ public class UserServiceImpl implements UserService {
             String sortBy,
             String direction
     ){
-        if (sortBy==null) sortBy="userId";
         sortBy= switch (sortBy.toLowerCase()){
             case "name"->"name";
             case "role"->"role";
