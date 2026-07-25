@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
     private final UserService userService;
 
