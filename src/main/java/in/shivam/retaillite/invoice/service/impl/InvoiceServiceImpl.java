@@ -198,6 +198,16 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         //find invoice with JOIN FETCH users
         List<Invoice> invoices= invoiceRepository.findAllInvoiceAndUsers(ids);
+
+        // 3. Re-sort the fetched list to match the original database order
+        List<Invoice> sortedInvoices = ids.stream()
+                .map(id -> invoices.stream()
+                        .filter(inv -> inv.getId().equals(id))
+                        .findFirst()
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .toList();
+
         //create requested page from invoices
         Page<Invoice> invoicePage=new PageImpl<>(invoices,pageable,pagedInvoices.getTotalElements());
         //map invoice to invoiceResponse
