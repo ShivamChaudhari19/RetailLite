@@ -103,10 +103,4 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         return authToken.substring(BEARER_PREFIX.length());
     }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path=request.getServletPath();
-        return path.startsWith("/auth/");
-    }
 }
