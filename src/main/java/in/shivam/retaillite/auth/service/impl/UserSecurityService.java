@@ -1,7 +1,7 @@
 package in.shivam.retaillite.auth.service.impl;
 
-import in.shivam.retaillite.user.entity.User;
 import in.shivam.retaillite.user.UserRepository;
+import in.shivam.retaillite.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
