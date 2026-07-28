@@ -24,8 +24,7 @@ public class JwtServiceImpl implements JwtService {
             @Value("${app.security.jwt-secret-key}") String SECRET_KEY,
             @Value("${app.security.token-expiration-in-minute}") long EXPIRATION
     ){
-        String SECRET_KEY="lkskdksifkdioalsiseewqesdegsdgss";
-        this.key=Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        this.key=Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         this.EXPIRATION=EXPIRATION*60*1000L;
     }
     @Override

@@ -1,6 +1,5 @@
 package in.shivam.retaillite.category.dto;
 
-import in.shivam.retaillite.product.entity.Product;
 import lombok.*;
 
 import java.sql.Timestamp;
