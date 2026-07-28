@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class JwtServiceImpl implements JwtService {
@@ -50,16 +49,6 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public boolean isTokenValid(String jwt) {
         return !isExpired(jwt);
-    }
-    @Override
-    public List<String> extractRoles(String token) {
-        List<?> o = extractClaim(token, claims -> claims.get("role", List.class));
-        if (o != null) {
-            return o.stream()
-                    .map(Object::toString)
-                    .toList();
-        }
-        return Collections.emptyList();
     }
     private  <T>T extractClaim(String jwt, Function<Claims,T>extractClaim){
         Claims allClaims=extractAllClaims(jwt);
