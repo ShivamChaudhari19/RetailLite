@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,11 +29,6 @@ public class CategoryController {
             @Valid @RequestPart("category") CategoryRequest request,
             @RequestPart("categoryImg") MultipartFile categoryImg
     ){
-
-        if (categoryImg == null){
-            log.warn("file not found for category :{}\n{}",request.getName(), getClass());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "file not found");
-        }
         log.debug("Category creating for: {}", request.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(categoryService.create(request, categoryImg));
