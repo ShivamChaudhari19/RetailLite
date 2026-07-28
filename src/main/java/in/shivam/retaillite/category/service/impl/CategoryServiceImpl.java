@@ -9,7 +9,6 @@ import in.shivam.retaillite.category.service.CategoryService;
 import in.shivam.retaillite.category.validation.CategoryImageValidation;
 import in.shivam.retaillite.common.exception.ResourceNotFoundException;
 import in.shivam.retaillite.storage.service.StorageService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -19,8 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @Service
