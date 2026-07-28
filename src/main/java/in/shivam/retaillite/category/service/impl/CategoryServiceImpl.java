@@ -83,7 +83,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse create(CategoryRequest category, MultipartFile file) {
+    @Transactional
+    public CategoryResponse create( CategoryRequest category, MultipartFile file) {
         if(
                 categoryRepository.existsByNameIgnoreCase(category.getName())
         ){
