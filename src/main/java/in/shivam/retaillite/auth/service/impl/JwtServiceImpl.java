@@ -4,20 +4,25 @@ import in.shivam.retaillite.auth.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.function.Function;
 
 @Service
 public class JwtServiceImpl implements JwtService {
     private final SecretKey key;
-    private static final long EXPIRATION=1000*60*60;
+    private  final long EXPIRATION;
+    @Autowired
     public JwtServiceImpl(
-            @Value("${app.security.jwt-secret-key}") String SECRET_KEY
+            @Value("${app.security.jwt-secret-key}") String SECRET_KEY,
+            @Value("${app.security.token-expiration-in-minute}") long EXPIRATION
     ){
         String SECRET_KEY="lkskdksifkdioalsiseewqesdegsdgss";
         this.key=Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
