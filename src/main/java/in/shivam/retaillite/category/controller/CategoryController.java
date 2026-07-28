@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/category")
+@Validated
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -43,9 +45,9 @@ public class CategoryController {
     @GetMapping("/categories")
     public ResponseEntity<Page<CategoryResponse>> fetch(
             @RequestParam(defaultValue = "0")
-            int page,
+            @Min(0) int page,
             @RequestParam(defaultValue = "20")
-            int size,
+            @Min(0) @Max(50) int size,
             @RequestParam(defaultValue = "sortBy")
             String sortBy,
             @RequestParam(defaultValue = "asc")
