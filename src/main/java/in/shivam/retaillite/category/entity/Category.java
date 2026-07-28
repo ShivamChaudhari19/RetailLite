@@ -19,6 +19,7 @@ public class Category {
     private Long id;
     @Column(unique = true, nullable = false)
     private String categoryId;
+    @Column(unique = true)
     private String name;
     private String description;
     private String imageKey;
