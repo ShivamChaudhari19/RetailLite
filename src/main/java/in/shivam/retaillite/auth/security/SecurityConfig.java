@@ -1,9 +1,9 @@
 package in.shivam.retaillite.auth.security;
 
 import in.shivam.retaillite.auth.filter.JwtRequestFilter;
+import in.shivam.retaillite.auth.service.JwtService;
 import in.shivam.retaillite.auth.service.impl.AppUserDetailsService;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -22,16 +22,26 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtRequestFilter jwtRequestFilter;
     private final AppUserDetailsService appUserDetailsService;
+
+    private final JwtService jwtService;
+    @Qualifier("handlerExceptionResolver")
+    private final HandlerExceptionResolver handlerExceptionResolver;
+
+    public SecurityConfig(AppUserDetailsService appUserDetailsService, JwtService jwtService, HandlerExceptionResolver handlerExceptionResolver) {
+        this.appUserDetailsService = appUserDetailsService;
+        this.jwtService = jwtService;
+        this.handlerExceptionResolver = handlerExceptionResolver;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -39,11 +49,9 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(authorize->authorize
                         .requestMatchers(AuthConstants.PUBLIC_URL).permitAll()
-//                        .requestMatchers(AuthConstants.ADMIN_URL).hasRole("ADMIN")
-//                        .requestMatchers(AuthConstants.USER_URL).hasAnyRole("ADMIN","USER")
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(
                         (ex)->ex.accessDeniedHandler(
                                 (
@@ -84,6 +92,10 @@ public class SecurityConfig {
        DaoAuthenticationProvider daoAuthenticationProvider=new DaoAuthenticationProvider(appUserDetailsService);
        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(daoAuthenticationProvider);
+   }
+
+    public JwtRequestFilter jwtRequestFilter(){
+        return new JwtRequestFilter(jwtService,appUserDetailsService,handlerExceptionResolver);
    }
 
 }
