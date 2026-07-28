@@ -4,6 +4,8 @@ import in.shivam.retaillite.category.dto.CategoryRequest;
 import in.shivam.retaillite.category.dto.CategoryResponse;
 import in.shivam.retaillite.category.service.CategoryService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
