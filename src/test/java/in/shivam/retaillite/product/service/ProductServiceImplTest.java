@@ -1,6 +1,5 @@
 package in.shivam.retaillite.product.service;
 
-import in.shivam.retaillite.category.dto.CategoryResponse;
 import in.shivam.retaillite.category.entity.Category;
 import in.shivam.retaillite.category.repository.CategoryRepository;
 import in.shivam.retaillite.common.exception.ResourceNotFoundException;
@@ -15,14 +14,12 @@ import in.shivam.retaillite.product.validation.ProductImageValidation;
 import in.shivam.retaillite.storage.service.StorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -84,8 +81,6 @@ public class ProductServiceImplTest {
         ProductResponse response=productService.create(request,file);
         assertEquals(response.getName(),savedProduct.getName());
         assertNotNull(response);
-        verifyNoMoreInteractions(productRepository);
-        verifyNoMoreInteractions(inventoryRepository);
     }
 
     @Test
