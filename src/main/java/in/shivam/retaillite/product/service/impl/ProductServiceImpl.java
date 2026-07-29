@@ -76,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
             Product savedProduct=productRepository.save(product);
             inventoryRepository.save(
                     Inventory.builder()
-                            .inventoryId(UUID.randomUUID().toString())
+                            .inventoryId("INVENTORY:"+product.getProductId())
                             .product(product)
                             .availableQuantity(0)
                             .lowStockThreshold(5)
@@ -152,7 +152,7 @@ public class ProductServiceImpl implements ProductService {
     private Product toProduct(ProductRequest request, Category category, String imageKey) {
 
         return Product.builder()
-                .productId(UUID.randomUUID().toString())
+                .productId("PROD:"+UUID.randomUUID().toString())
                 .name(request.getName())
                 .price(request.getPrice())
                 .taxRate(request.getTaxRate())
