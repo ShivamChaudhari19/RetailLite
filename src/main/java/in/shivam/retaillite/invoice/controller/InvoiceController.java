@@ -81,7 +81,7 @@ public class InvoiceController {
 
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=ERP_INVOICE_INV-2026-001.pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename="+invoiceId+".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(invoicePdfService.generateInvoice(invoiceId));
     }
