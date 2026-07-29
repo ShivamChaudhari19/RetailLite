@@ -196,10 +196,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of(
-                        "error","Not Found",
-                        "message",exception.getMessage()
-                ));
+                .body(ErrorResponse.builder()
+                        .error("username not found")
+                        .message(exception.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(System.currentTimeMillis()).build()
+                );
     }
     @ExceptionHandler(UserAlreadyExists.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExists e){
