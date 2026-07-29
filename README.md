@@ -277,8 +277,18 @@ Documented honestly rather than hidden:
 
 ## 📄 License
 
-No license specified yet — add one in `pom.xml`/`LICENSE` before public distribution.
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for the full text.
 
+```xml
+<!-- Declared in pom.xml -->
+<licenses>
+    <license>
+        <name>Apache License, Version 2.0</name>
+        <url>https://apache.org</url>
+        <distribution>repo</distribution>
+    </license>
+</licenses>
+```
 ---
 
 <div align="center">
