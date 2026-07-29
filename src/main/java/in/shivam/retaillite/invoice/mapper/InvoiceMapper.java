@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @RequiredArgsConstructor
@@ -25,8 +27,12 @@ public class InvoiceMapper {
                              InvoiceStatus invoiceStatus,
                              List<InvoiceItem> invoiceItems
     ){
+        String date= LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        int randomSeq= ThreadLocalRandom.current().nextInt(10000);
+        String seqPart=String.format("%05d",randomSeq);
+        String invoiceId="INV-"+date+"-"+seqPart;
         return Invoice.builder()
-                .invoiceId(UUID.randomUUID().toString())
+                .invoiceId(invoiceId)
                 .user(user)
                 .customerName(invoiceRequest.customerName())
                 .customerNumber(invoiceRequest.customerNumber())
