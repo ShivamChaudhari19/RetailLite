@@ -131,7 +131,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
     private  Category toCategory(CategoryRequest categoryRequest, String imageKey){
         return Category.builder()
-                .categoryId(UUID.randomUUID().toString())
+                .categoryId("CAT:"+ UUID.randomUUID())
                 .name(categoryRequest.getName())
                 .description(categoryRequest.getDescription())
                 .imageKey(imageKey)
