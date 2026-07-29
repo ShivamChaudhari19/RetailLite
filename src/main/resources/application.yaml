@@ -28,7 +28,7 @@ spring:
     open-in-view: false
     hibernate:
       show-sql: true
-      ddl-auto: none
+      ddl-auto: validate
   # Enable or disable Flyway completely (Default: true)
   flyway:
     enabled: true
