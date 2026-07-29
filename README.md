@@ -79,15 +79,15 @@ in [docs/architecture.md](docs/architecture.md).*
 
 ### 1. Paid Invoice
 
-<img src="diagrams/sampleInvoices/INV-2026-07-29-07266.jpg">
+<img src="diagrams/sampleInvoices/INV-2026-07-29-07266.jpg" width="75%">
 
 ### 2. Pending Invoice
 
-<img src="diagrams/sampleInvoices/INV-2026-07-29-01079.jpg">
+<img src="diagrams/sampleInvoices/INV-2026-07-29-01079.jpg" width="75%" >
 
 
 ### 3. Payment Refunded/ Canceled Invoice
-<img src="diagrams/sampleInvoices/INV-2026-07-0001.jpg">
+<img src="diagrams/sampleInvoices/INV-2026-07-0001.jpg" width="75%" >
 
 ## 📦 Modules
 
@@ -126,7 +126,6 @@ full rationale in
 
 ## 🖼 Diagrams
 
-<details>
 <summary><strong>Sequence diagrams</strong> — login, authenticated request, pay/verify/refund</summary>
 <br/>
 
@@ -150,9 +149,7 @@ full rationale in
 
 <img src="diagrams/sequence/refund-payment-sequence.svg" width="100%" alt="Refund payment sequence diagram"/>
 
-</details>
 
-<details>
 <summary><strong>Class / UML diagrams</strong> — per module</summary>
 <br/>
 
@@ -167,15 +164,12 @@ full rationale in
 | Payment   | [`diagrams/modules/payment-uml.md`](diagrams/module/payment-uml.md)                  |
 | Storage   | [`diagrams/modules/storage-uml.md`](diagrams/module/storage-uml.md)                  |
 
-</details>
+<br/>
 
-<details>
 <summary><strong>Entity-relationship diagram</strong></summary>
 <br/>
 <img src="diagrams/erd/ERD_RetailLite.svg"/>
-See **[diagrams/erd/database-erd.md](diagrams/erd/database-erd.md)** for the full entity-relationship
-diagram (`User`, `Category`, `Product`, `Inventory`, `Invoice`, `InvoiceItem`, `Payment`) with
-cardinalities and cascade rules, rendered as `ERD_RetailLite.svg`.
+<br/>
 
 </details>
 
