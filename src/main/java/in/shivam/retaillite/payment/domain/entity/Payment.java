@@ -5,12 +5,8 @@ import in.shivam.retaillite.common.enums.PaymentStatus;
 import in.shivam.retaillite.invoice.entity.Invoice;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.action.internal.OrphanRemovalAction;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -25,11 +21,11 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String paymentId;
 
     @ManyToOne
-    @JoinColumn(name = "invoiceId")
+    @JoinColumn(nullable = false, name = "invoice_id")
     private Invoice invoice;
 
     @Enumerated(EnumType.STRING)
