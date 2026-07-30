@@ -28,7 +28,14 @@ spring:
     open-in-view: false
     hibernate:
       show-sql: true
-      ddl-auto: update
+      ddl-auto: none
+  # Enable or disable Flyway completely (Default: true)
+  flyway:
+    enabled: true
+    # Locations of migration scripts (Default: classpath:db/migration)
+    locations: "classpath:db/migration"
+    # Name of the table that will track schema history (Default: flyway_schema_history)
+    table: "flyway_schema_history"
   servlet:
     multipart:
       max-file-size: 8MB
@@ -58,4 +65,4 @@ razorpay:
   webhook-secret: ${RAZORPAY_WEBHOOK_SECRET}
 payment:
   pending:
-    timeout: 15
+    payment-timeout: 15
