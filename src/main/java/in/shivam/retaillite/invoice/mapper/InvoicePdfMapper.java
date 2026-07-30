@@ -26,7 +26,7 @@ public class InvoicePdfMapper {
 
         return  InvoiceDocument.builder()
                 .invoiceId(invoice.getInvoiceId())
-                .invoiceIssuer(invoice.getUser().getUserId())
+                .invoiceIssuer(invoice.getUser().getUsername())
                 .createdAt(LocalDateTime.now())
                 .customerName(invoice.getCustomerName())
                 .customerNumber(invoice.getCustomerNumber())
