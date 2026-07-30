@@ -13,7 +13,7 @@ public interface InventoryRepository extends JpaRepository<Inventory,Long> {
 
 
     @Query("""
-            SELECT i FROM Inventory i WHERE i.availableQuantity<i.lowStockThreshold
+            SELECT i FROM Inventory i JOIN FETCH i.product WHERE i.availableQuantity<i.lowStockThreshold
             """)
     List<Inventory> findLowStock();
 

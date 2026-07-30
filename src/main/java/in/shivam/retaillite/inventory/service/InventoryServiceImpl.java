@@ -1,14 +1,13 @@
 package in.shivam.retaillite.inventory.service;
 
 import in.shivam.retaillite.common.exception.ResourceNotFoundException;
-import in.shivam.retaillite.inventory.dto.StockUpdateRequest;
 import in.shivam.retaillite.inventory.dto.InventoryResponse;
+import in.shivam.retaillite.inventory.dto.StockUpdateRequest;
 import in.shivam.retaillite.inventory.dto.ThresholdUpdateRequest;
 import in.shivam.retaillite.inventory.entity.Inventory;
 import in.shivam.retaillite.inventory.exception.QuantityOutOfBoundException;
 import in.shivam.retaillite.inventory.repository.InventoryRepository;
 import in.shivam.retaillite.product.entity.Product;
-import in.shivam.retaillite.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -34,8 +32,7 @@ public class InventoryServiceImpl implements InventoryService{
             String productId,
             StockUpdateRequest quantity
     ) {
-        Inventory inventory=inventoryRepository.findByProduct_productId(productId).orElseThrow(
-                ()-> new ResourceNotFoundException("Inventory not found for the product: "+productId));
+        Inventory inventory=findInventory(productId);
         Integer availableQuantity=inventory.getAvailableQuantity();
         inventory.setAvailableQuantity(availableQuantity+quantity.getQuantity());
         Inventory updatedInventory =inventoryRepository.save(inventory);
@@ -45,7 +42,7 @@ public class InventoryServiceImpl implements InventoryService{
     @Transactional(readOnly = true)
     @Override
     public InventoryResponse getStock(String productId) {
-        Inventory inventory= inventoryRepository.findByProduct_productId(productId).orElseThrow(()->new ResourceNotFoundException("Inventory not found."));
+        Inventory inventory=findInventory(productId);
         return toInventoryResponse(inventory);
     }
 
@@ -58,7 +55,6 @@ public class InventoryServiceImpl implements InventoryService{
             String orderedBy
     ) {
 
-        if (sortBy==null) sortBy="inventoryId";
         sortBy= switch (sortBy.toLowerCase()){
             case "inventoryid" ->"inventoryId";
             case "productid"->"productId";
@@ -79,8 +75,7 @@ public class InventoryServiceImpl implements InventoryService{
     @Override
     public InventoryResponse removeStock(String productId, StockUpdateRequest quantity) {
 
-        Inventory inventory =inventoryRepository.findByProduct_productId(productId).orElseThrow(()->
-                new ResourceNotFoundException("Inventory not found"));
+        Inventory inventory =findInventory(productId);
 
         if (inventory.getAvailableQuantity()-quantity.getQuantity()<0){
             log.warn("Available quantity is {} and remove quantity is {}",inventory.getAvailableQuantity(),quantity.getQuantity());
@@ -109,8 +104,7 @@ public class InventoryServiceImpl implements InventoryService{
     @Transactional
     @Override
     public InventoryResponse setThreshold(String productId, ThresholdUpdateRequest threshold) {
-        Inventory inventory=inventoryRepository.findByProduct_productId(productId)
-                .orElseThrow(()->new ResourceNotFoundException("inventory not found"));
+        Inventory inventory=findInventory(productId);
         inventory.setLowStockThreshold(threshold.getThreshold());
         Inventory updatedInventory = inventoryRepository.save(inventory);
         return toInventoryResponse(updatedInventory);
@@ -131,7 +125,7 @@ public class InventoryServiceImpl implements InventoryService{
             Inventory inventory=inventoryRepository.findByProduct(product)
                     .orElseThrow(()->new ResourceNotFoundException("Product not found.."));
         if (inventory.getAvailableQuantity()-quantity<0){
-            log.warn("Available quantity is {} and remove quantity is {}",inventory.getAvailableQuantity(),quantity.getQuantity());
+            log.warn("Available quantity is {} and remove quantity is {}", inventory.getAvailableQuantity(), quantity);
             throw new QuantityOutOfBoundException("Quantity"+quantity+" is greater than available quantity");
         }
             Integer inventoryAvailableQuantity=inventory.getAvailableQuantity();
@@ -139,6 +133,21 @@ public class InventoryServiceImpl implements InventoryService{
             inventoryRepository.save(inventory);
     }
 
+    @Override
+    @Transactional
+    public void addStock(Product product, Integer quantity) {
+        Inventory inventory = inventoryRepository.findByProduct(product)
+                .orElseThrow(() -> new ResourceNotFoundException("Product: " + product.getProductId() + " not Found"));
+        Integer availableQuantity = inventory.getAvailableQuantity() + quantity;
+        inventory.setAvailableQuantity(availableQuantity);
+        inventoryRepository.save(inventory);
+    }
+
+    private Inventory findInventory(String productId){
+
+        return inventoryRepository.findByProduct_productId(productId).orElseThrow(
+                ()-> new ResourceNotFoundException("Inventory not found for the product: "+productId));
+    }
     private InventoryResponse toInventoryResponse(Inventory inventory){
         return InventoryResponse.builder()
                 .inventoryId(inventory.getInventoryId())

@@ -1,16 +1,18 @@
 package in.shivam.retaillite.inventory.controller;
 
-import in.shivam.retaillite.inventory.dto.StockUpdateRequest;
 import in.shivam.retaillite.inventory.dto.InventoryResponse;
+import in.shivam.retaillite.inventory.dto.StockUpdateRequest;
 import in.shivam.retaillite.inventory.dto.ThresholdUpdateRequest;
 import in.shivam.retaillite.inventory.service.InventoryService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/inventory")
+@Validated
 public class InventoryController {
 
     private final InventoryService inventoryService;
@@ -44,10 +47,10 @@ public class InventoryController {
     @GetMapping("/stock")
     public ResponseEntity<Page<InventoryResponse>> getAllStock(
             @RequestParam(defaultValue = "0")
-            int page,
+            @Min(0) int page,
 
             @RequestParam(defaultValue = "15")
-            int size,
+            @Min(0) @Max(50) int size,
 
             @RequestParam(defaultValue = "availableQuantity")
             String sortBy,
