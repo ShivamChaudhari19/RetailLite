@@ -79,15 +79,15 @@ in [docs/architecture.md](docs/architecture.md).*
 
 ### 1. Paid Invoice
 
-<img src="diagrams/sampleInvoices/INV-2026-07-29-07266.jpg" width="75%">
+<img src="diagrams/sampleInvoices/INV-PAID.jpg" width="75%">
 
 ### 2. Pending Invoice
 
-<img src="diagrams/sampleInvoices/INV-2026-07-29-01079.jpg" width="75%" >
+<img src="diagrams/sampleInvoices/INV-PENDING.jpg" width="75%" >
 
 
 ### 3. Payment Refunded/ Canceled Invoice
-<img src="diagrams/sampleInvoices/INV-2026-07-0001.jpg" width="75%" >
+<img src="diagrams/sampleInvoices/INV-CANCELED.jpg" width="75%" >
 
 ## 📦 Modules
 
