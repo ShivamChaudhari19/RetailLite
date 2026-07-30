@@ -1,11 +1,11 @@
 package in.shivam.retaillite.payment.controller;
 
+import in.shivam.retaillite.payment.application.PaymentOrchestrator;
 import in.shivam.retaillite.payment.dto.request.PaymentRequest;
 import in.shivam.retaillite.payment.dto.request.PaymentVerifyRequest;
-import in.shivam.retaillite.payment.dto.response.PaymentResponse;
 import in.shivam.retaillite.payment.dto.request.RefundRequest;
+import in.shivam.retaillite.payment.dto.response.PaymentResponse;
 import in.shivam.retaillite.payment.dto.response.RefundResponse;
-import in.shivam.retaillite.payment.application.PaymentOrchestrator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,7 +47,7 @@ public class PaymentController {
     }
     @PostMapping("/verify")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<PaymentResponse> response(
+    public ResponseEntity<PaymentResponse> verify(
             @RequestBody
             @Valid PaymentVerifyRequest request
     ){

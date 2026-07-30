@@ -1,18 +1,13 @@
 package in.shivam.retaillite.payment.service;
 
 
-
-
-import in.shivam.retaillite.common.enums.PaymentMethod;
-import in.shivam.retaillite.common.enums.PaymentStatus;
-import in.shivam.retaillite.invoice.entity.Invoice;
-import in.shivam.retaillite.payment.dto.PaymentRequest;
-import in.shivam.retaillite.payment.dto.PaymentResponse;
-import in.shivam.retaillite.payment.entity.Payment;
-
-import java.math.BigDecimal;
+import in.shivam.retaillite.payment.domain.entity.Payment;
+import in.shivam.retaillite.payment.dto.request.PaymentVerifyRequest;
 
 public interface PaymentService {
-    PaymentStatus pay(BigDecimal amount);
+    Payment pay(Payment payment);
+    Payment  refund(Payment payment);
     String getPaymentMethod();
+
+    Payment verifyPayment(Payment payment, PaymentVerifyRequest request);
 }

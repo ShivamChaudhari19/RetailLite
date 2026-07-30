@@ -3,8 +3,8 @@ package in.shivam.retaillite.payment.service.impl;
 import com.razorpay.Order;
 import com.razorpay.Refund;
 import in.shivam.retaillite.payment.config.RazorpayProperties;
-import in.shivam.retaillite.payment.dto.request.PaymentVerifyRequest;
 import in.shivam.retaillite.payment.domain.entity.Payment;
+import in.shivam.retaillite.payment.dto.request.PaymentVerifyRequest;
 import in.shivam.retaillite.payment.exception.PaymentException;
 import in.shivam.retaillite.payment.exception.PaymentVerificationException;
 import in.shivam.retaillite.payment.gateway.RazorpayGateway;
@@ -33,8 +33,7 @@ public class RazorpayService implements PaymentService {
             if (!isOrderIdExpired(payment))
                 return payment;
         }
-        Order order= gateway.createOrder(payment);
-        String gatewayOrderId= order.get("id");
+        String gatewayOrderId= gateway.createOrder(payment);
         payment.setGatewayOrderId(gatewayOrderId);
         payment.setGatewayOrderIdCreatedAt(Timestamp.from(Instant.now()));
         return payment;
@@ -47,12 +46,8 @@ public class RazorpayService implements PaymentService {
 
     @Override
     public Payment refund(Payment payment) {
-        Refund refund=gateway.refundPayment(payment);
-        if (!"processed".equalsIgnoreCase(refund.get("status"))){
-            log.warn("payment failed for the payment: {}",payment.getPaymentId());
-            throw new PaymentException("Refund Failed for payment id: "+payment.getPaymentId(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        payment.setGatewayRefundId(refund.get("id"));
+        String  gatewayRefundId=gateway.refundPayment(payment);
+        payment.setGatewayRefundId(gatewayRefundId);
         payment.markRefunded();
         return payment;
     }

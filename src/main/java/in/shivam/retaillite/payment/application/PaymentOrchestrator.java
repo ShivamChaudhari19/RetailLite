@@ -10,13 +10,13 @@ import in.shivam.retaillite.invoice.entity.InvoiceItem;
 import in.shivam.retaillite.invoice.entity.InvoiceStatus;
 import in.shivam.retaillite.invoice.repository.InvoiceRepository;
 import in.shivam.retaillite.payment.PaymentRepository;
+import in.shivam.retaillite.payment.domain.entity.Payment;
 import in.shivam.retaillite.payment.domain.validation.InvoiceValidation;
 import in.shivam.retaillite.payment.dto.request.PaymentRequest;
 import in.shivam.retaillite.payment.dto.request.PaymentVerifyRequest;
 import in.shivam.retaillite.payment.dto.request.RefundRequest;
 import in.shivam.retaillite.payment.dto.response.PaymentResponse;
 import in.shivam.retaillite.payment.dto.response.RefundResponse;
-import in.shivam.retaillite.payment.domain.entity.Payment;
 import in.shivam.retaillite.payment.exception.InvoiceAlreadyPaidException;
 import in.shivam.retaillite.payment.exception.InvoiceCanceledException;
 import in.shivam.retaillite.payment.exception.PaymentException;
@@ -26,7 +26,6 @@ import in.shivam.retaillite.payment.response.PaymentResponseFactory;
 import in.shivam.retaillite.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,41 +45,41 @@ public class PaymentOrchestrator {
     private final InvoiceValidation invoiceValidation;
 
     @Transactional
-    public PaymentResponse processInvoicePayment(@NonNull PaymentRequest request) {
+    public PaymentResponse processInvoicePayment( PaymentRequest request) {
 
         Invoice invoice = getInvoiceByInvoiceId(request.invoiceId());
 
         invoiceValidation.validateCanPay(invoice);
 
-        //validate All Item Stock
         validateItemStock(invoice.getInvoiceItems());
 
+        Payment payment=getOrCreatePendingPayment(invoice,request);
 
+        PaymentService paymentService = paymentServiceFactory.getPaymentService(request.paymentMethod().name());
+
+        payment = paymentService.pay(payment);
+
+        handlePaymentResult(payment,invoice);
+
+        return paymentResponseFactory.createResponse(payment);
+    }
+
+    private Payment getOrCreatePendingPayment(Invoice invoice, PaymentRequest request) {
         //Find existing PENDING payment if present
         Payment pendingPayment = findPendingPaymentByInvoiceId(invoice.getInvoiceId());
-        Payment payment;
+
         if (pendingPayment == null) {
             //create a partial  payment with pending paymentStatus
-            payment = paymentMapper.toPendingPayment(invoice, request);
+            Payment payment = paymentMapper.toPendingPayment(invoice, request);
             paymentRepository.save(payment);
+            return payment;
         } else if (!(pendingPayment.getPaymentMethod() == request.paymentMethod())  ) {
             pendingPayment.markExpired();
             paymentRepository.save(pendingPayment);
-            payment = paymentMapper.toPendingPayment(invoice, request);
+            return paymentMapper.toPendingPayment(invoice, request);
         } else {
-            payment = pendingPayment;
+            return pendingPayment;
         }
-
-
-        PaymentService paymentService = paymentServiceFactory.getPaymentService(request.paymentMethod().name());
-        payment = paymentService.pay(payment);
-        try{
-            completeImmediatePay(payment, invoice);
-        }catch (QuantityOutOfBoundException e){
-            refundPayment(payment);
-            invoice.markCanceled();
-        }
-        return paymentResponseFactory.createResponse(payment);
     }
 
     @Transactional
@@ -128,15 +127,20 @@ public class PaymentOrchestrator {
 
     }
 
-    private void completeImmediatePay(Payment payment, Invoice invoice) {
-        //if paymentStatus is Success deduct the stock
-        if (payment.getPaymentStatus() == PaymentStatus.SUCCESS) {
+    private void handlePaymentResult(Payment payment, Invoice invoice) {
+        try {
+            //if paymentStatus is Success deduct the stock
+            if (payment.getPaymentStatus() == PaymentStatus.SUCCESS) {
 
-            log.debug("Payment Successful.....");
+                log.debug("Payment Successful.....");
 
-            invoice.setInvoiceStatus(InvoiceStatus.PAID);
-            //deduct stock
-            invoice.getInvoiceItems().forEach(invoiceItem -> inventoryService.deductStock(invoiceItem.getProduct(), invoiceItem.getQuantity()));
+                invoice.setInvoiceStatus(InvoiceStatus.PAID);
+                //deduct stock
+                invoice.getInvoiceItems().forEach(invoiceItem -> inventoryService.deductStock(invoiceItem.getProduct(), invoiceItem.getQuantity()));
+            }
+        } catch (QuantityOutOfBoundException  e) {
+            refundPayment(payment);
+            invoice.markCanceled();
         }
     }
 
@@ -203,7 +207,7 @@ public class PaymentOrchestrator {
             //check if the invoice is paid by another thread during current payment process
             invoiceValidation.validateCanCompletePayment(invoice);
             //deduct the invoice stock
-            invoice.getInvoiceItems().forEach(invoiceItem -> inventoryService.deductStock(invoiceItem.getProduct(), invoiceItem.getQuantity()));
+            invoice.getInvoiceItems().forEach(invoiceItem ->     inventoryService.deductStock(invoiceItem.getProduct(), invoiceItem.getQuantity()));
         }catch (InvoiceAlreadyPaidException e){
             log.warn("Invoice :{} is already paid so has to refund captured amount",payment.getInvoice().getInvoiceId());
             return refundPayment(payment);
