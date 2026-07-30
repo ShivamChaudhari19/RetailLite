@@ -92,13 +92,13 @@ public class StorageFileValidator {
         String fileName = Objects.requireNonNull(
                 file.getOriginalFilename()
         ).toLowerCase();
-        boolean blocked = BLOCKED_EXTENSION.stream()
+        boolean allowed = ALLOWED_EXTENSION.stream()
                 .anyMatch(fileName::endsWith);
 
-        if (blocked) {
+        if (!allowed) {
             log.warn(
-                    "storage validation failed:blocked extension:{}",
-                    fileName
+                    "storage validation failed:blocked extension:{},allowed file are only:{}",
+                    fileName,ALLOWED_EXTENSION
             );
             throw new ResponseStatusException(
                     BAD_REQUEST,

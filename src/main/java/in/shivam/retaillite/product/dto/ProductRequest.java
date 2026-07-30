@@ -1,6 +1,5 @@
 package in.shivam.retaillite.product.dto;
 
-import in.shivam.retaillite.category.entity.Category;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,5 +25,6 @@ public class ProductRequest {
     private BigDecimal taxRate;
     @Size(min = 2, max = 250)
     private String description;
+    @NotBlank
     private String categoryId;
 }

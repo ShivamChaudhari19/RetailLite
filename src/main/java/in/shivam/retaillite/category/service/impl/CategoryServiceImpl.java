@@ -4,10 +4,12 @@ import in.shivam.retaillite.category.dto.CategoryRequest;
 import in.shivam.retaillite.category.dto.CategoryResponse;
 import in.shivam.retaillite.category.entity.Category;
 import in.shivam.retaillite.category.exception.CategoryAlreadyExists;
+import in.shivam.retaillite.category.exception.CategoryDeletionException;
 import in.shivam.retaillite.category.repository.CategoryRepository;
 import in.shivam.retaillite.category.service.CategoryService;
 import in.shivam.retaillite.category.validation.CategoryImageValidation;
 import in.shivam.retaillite.common.exception.ResourceNotFoundException;
+import in.shivam.retaillite.product.repository.ProductRepository;
 import in.shivam.retaillite.storage.service.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
@@ -23,6 +26,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
+    private final ProductRepository productRepository;
 
     private final CategoryRepository categoryRepository;
     private final CategoryImageValidation categoryImageValidation;
@@ -31,11 +35,12 @@ public class CategoryServiceImpl implements CategoryService {
             @Qualifier(value = "localStorageService")
             StorageService storageService,
             CategoryRepository categoryRepository,
-            CategoryImageValidation categoryImageValidation
-    ){
+            CategoryImageValidation categoryImageValidation,
+            ProductRepository productRepository){
         this.categoryRepository = categoryRepository;
         this.categoryImageValidation = categoryImageValidation;
         this.storageService=storageService;
+        this.productRepository = productRepository;
     }
     @Override
     public Page<CategoryResponse> fetch(
@@ -44,7 +49,6 @@ public class CategoryServiceImpl implements CategoryService {
             String sortBy,
             String orderedBy
     ) {
-        if (sortBy==null) sortBy="categoryId";
         sortBy=switch (sortBy.toLowerCase()){
             case "name"->"name";
             case "createdat"->"createdAt";
@@ -57,12 +61,16 @@ public class CategoryServiceImpl implements CategoryService {
                 :Sort.by(sortBy).descending();
         Pageable pageable= PageRequest.of(page,size,sort);
         return categoryRepository.findAll(pageable)
-                .map(this::toCategoryResponse);
+                .map(category -> {
+                    String imgUrl=storageService.getFileUrl(category.getImageKey());
+                    return toCategoryResponse(category,imgUrl);
+
+                });
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void delete(String categoryId) throws ResourceNotFoundException {
+    public void delete(String categoryId){
         Category category= categoryRepository.findByCategoryId(categoryId)
                 .orElseThrow(()-> new ResourceNotFoundException("category not found: "+categoryId));
 
@@ -74,11 +82,12 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.delete(category);
         try {
             storageService.delete(category.getImageKey());
-        }catch (Exception e)
+        }catch (RuntimeException e)
         {
             log.error("failed to delete category image:{}",
                     category.getImageKey(),
                     e);
+            throw new RuntimeException("Could not delete category due to storage failure", e);
         }
     }
 
@@ -98,12 +107,10 @@ public class CategoryServiceImpl implements CategoryService {
         String key=null;
         try {
             key=storageService.upload(file,"category");
-            return toCategoryResponse(
-                    categoryRepository.save(
-                            toCategory(category,key)
-                    )
-            );
-        } catch (Exception e) {
+            Category savedCategory=categoryRepository.save(toCategory(category,key));
+            String imgUrl=storageService.getFileUrl(savedCategory.getImageKey());
+            return toCategoryResponse(savedCategory,imgUrl);
+        } catch (RuntimeException e) {
             if (key!=null){
                 log.warn("category failed to store in DB rollback uploaded image");
                 storageService.delete(key);
@@ -112,14 +119,13 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    private CategoryResponse toCategoryResponse(Category category) {
+    private CategoryResponse toCategoryResponse(Category category, String imgUrl) {
         return CategoryResponse.builder()
                 .categoryId(category.getCategoryId())
                 .name(category.getName())
                 .description(category.getDescription())
-                .imgUrl(
-                        storageService.getFileUrl(category.getImageKey())
-                ).createdAt(category.getCreatedAt())
+                .imgUrl(imgUrl)
+                .createdAt(category.getCreatedAt())
                 .updatedAt(category.getUpdatedAt())
                 .build();
     }

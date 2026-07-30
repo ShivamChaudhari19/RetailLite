@@ -4,7 +4,6 @@ import in.shivam.retaillite.storage.config.AwsProperties;
 import in.shivam.retaillite.storage.service.StorageService;
 import in.shivam.retaillite.storage.validation.StorageFileValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -14,10 +13,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.UUID;
-
+//todo: incomplete feature complete later
 @RequiredArgsConstructor
 @Service("s3StorageService")
-@Primary
 public class S3StorageService implements StorageService {
     private final AwsProperties awsProperties;
     private final S3Client s3Client;

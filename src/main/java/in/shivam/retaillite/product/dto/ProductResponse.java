@@ -1,6 +1,6 @@
 package in.shivam.retaillite.product.dto;
 
-import in.shivam.retaillite.category.entity.Category;
+
 import lombok.*;
 
 
