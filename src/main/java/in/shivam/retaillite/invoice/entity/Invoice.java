@@ -1,8 +1,6 @@
 package in.shivam.retaillite.invoice.entity;
 
-import in.shivam.retaillite.common.enums.PaymentMethod;
-import in.shivam.retaillite.common.enums.PaymentStatus;
-import in.shivam.retaillite.payment.entity.Payment;
+import in.shivam.retaillite.payment.domain.entity.Payment;
 import in.shivam.retaillite.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -58,9 +56,15 @@ public class Invoice {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
-    @JoinColumn(name = "invoiceId")
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<InvoiceItem> invoiceItems;
     @Version
     private Long version;
+
+    public void markPaid() {
+        setInvoiceStatus(InvoiceStatus.PAID);
+    }
+    public void markCanceled(){
+        setInvoiceStatus(InvoiceStatus.CANCELED);
+    }
 }

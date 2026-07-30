@@ -12,12 +12,15 @@ import java.util.UUID;
 @Component
 public class InvoiceItemMapper {
     public InvoiceItem toInvoiceItem(InvoiceItemRequest invoiceItemRequest, Product product){
+        BigDecimal unitPrice=product.getPrice();
+        BigDecimal taxRate=product.getTaxRate();
+        BigDecimal lineTotal= unitPrice.add(unitPrice.multiply(taxRate.divide(BigDecimal.valueOf(100d)))).multiply(BigDecimal.valueOf(invoiceItemRequest.quantity()));
         return InvoiceItem.builder()
                 .invoiceItemId(UUID.randomUUID().toString())
                 .product(product)
                 .quantity(invoiceItemRequest.quantity())
-                .unitPrice(product.getPrice())
-                .lineTotal(product.getPrice().add(product.getPrice().multiply(product.getTaxRate()).divide(BigDecimal.valueOf(100))))
+                .unitPrice(unitPrice)
+                .lineTotal(lineTotal)
                 .build();
     }
 

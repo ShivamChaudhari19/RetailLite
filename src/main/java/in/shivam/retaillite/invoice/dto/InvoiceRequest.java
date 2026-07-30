@@ -1,9 +1,10 @@
 package in.shivam.retaillite.invoice.dto;
 
-import in.shivam.retaillite.common.enums.PaymentMethod;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -11,10 +12,11 @@ public record InvoiceRequest(
         @NotNull
         String customerName,
         @NotNull
+        @Size(min=10,max = 10)
         String customerNumber,
         @Email
         String customerEmail,
         @NotEmpty
-        List<InvoiceItemRequest> items
+        List<@Valid InvoiceItemRequest> items
 ) {
 }

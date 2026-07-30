@@ -1,9 +1,6 @@
 package in.shivam.retaillite.invoice.dto;
 
-import in.shivam.retaillite.invoice.entity.InvoiceItem;
 import in.shivam.retaillite.invoice.entity.InvoiceStatus;
-import in.shivam.retaillite.common.enums.PaymentMethod;
-import in.shivam.retaillite.common.enums.PaymentStatus;
 import lombok.Builder;
 
 import java.math.BigDecimal;

@@ -9,7 +9,6 @@ import in.shivam.retaillite.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.xml.transform.stax.StAXResult;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;

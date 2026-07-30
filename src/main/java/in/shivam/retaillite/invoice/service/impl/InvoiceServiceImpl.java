@@ -4,7 +4,6 @@ import in.shivam.retaillite.common.exception.ResourceNotFoundException;
 import in.shivam.retaillite.inventory.entity.Inventory;
 import in.shivam.retaillite.inventory.exception.QuantityOutOfBoundException;
 import in.shivam.retaillite.inventory.repository.InventoryRepository;
-import in.shivam.retaillite.invoice.repository.InvoiceRepository;
 import in.shivam.retaillite.invoice.dto.InvoiceRequest;
 import in.shivam.retaillite.invoice.dto.InvoiceResponse;
 import in.shivam.retaillite.invoice.entity.Invoice;
@@ -12,15 +11,14 @@ import in.shivam.retaillite.invoice.entity.InvoiceItem;
 import in.shivam.retaillite.invoice.entity.InvoiceStatus;
 import in.shivam.retaillite.invoice.mapper.InvoiceItemMapper;
 import in.shivam.retaillite.invoice.mapper.InvoiceMapper;
+import in.shivam.retaillite.invoice.repository.InvoiceItemsRepository;
+import in.shivam.retaillite.invoice.repository.InvoiceRepository;
 import in.shivam.retaillite.invoice.service.InvoiceService;
 import in.shivam.retaillite.user.UserRepository;
 import in.shivam.retaillite.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,8 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -90,18 +90,18 @@ public class InvoiceServiceImpl implements InvoiceService {
 
                             //check the product is valid or not
                             //if not throw new resource not found exception
-                            Inventory InvoiceItemInventory =inventoryRepository.findByProduct_productId(invoiceItemRequest.productId())
+                            Inventory invoiceItemInventory =inventoryRepository.findByProduct_productId(invoiceItemRequest.productId())
                                     .orElseThrow(()->new ResourceNotFoundException("Product not found: "+invoiceItemRequest.productId()));
 
                             //check  if requested quantity is greater than available quantity
                             // if true throw quantity out of bound exception
-                            if (InvoiceItemInventory.getAvailableQuantity()<invoiceItemRequest.quantity()){
+                            if (invoiceItemInventory.getAvailableQuantity()<invoiceItemRequest.quantity()){
                                 log.warn("requested quantity is greater than Available Quantity.");
                                 throw new QuantityOutOfBoundException("Stock is Running out.... try again some time");
                             }
 
                             //map InvoiceItemRequest to InvoiceItem
-                            return invoiceItemMapper.toInvoiceItem(invoiceItemRequest, InvoiceItemInventory.getProduct());
+                            return invoiceItemMapper.toInvoiceItem(invoiceItemRequest, invoiceItemInventory.getProduct());
                         }
                 ).toList();
 
@@ -130,8 +130,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 InvoiceStatus.PENDING,
                 invoiceItems
         );
-
-
+        invoice.getInvoiceItems().forEach(item -> item.setInvoice(invoice));
         /// save the invoice in db with pending status
         Invoice placedOrder=invoiceRepository.save(invoice);
         log.debug("Invoice is saved with PENDING status.");
@@ -154,7 +153,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         //page request form client
         Pageable pageable= PageRequest.of(page,size);
         //find invoice items for requested page
-        Page<Invoice> pagedInvoices =invoiceRepository.findAllInvoiceByIds(pageable,InvoiceStatus.valueOf(invoiceStatus));
+        Page<Invoice> pagedInvoices =invoiceRepository.findAllInvoiceByInvoiceStatus(pageable,InvoiceStatus.valueOf(invoiceStatus));
         //get invoice ids from pagedInvoices
         Set<Long> ids= pagedInvoices.stream()
                 .map(Invoice::getId)
@@ -168,6 +167,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+//    @Transactional
+    //Could not initialize proxy [in.shivam.retaillite.user.entity.User#1] - no session
+    // @Transcational may solve above error but does not solve the N+1 query problem
+    // for that use join fetch or entity graph
     public Page<InvoiceResponse> findAll(
             Integer page,
             Integer size,
@@ -192,9 +195,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         //find requested pageInvoices only
         Page<Invoice> pagedInvoices=invoiceRepository.findAllInvoices(pageable);
         //find pagedInvoices ids
-        Set<Long> ids=pagedInvoices.stream()
+        List<Long> ids=pagedInvoices.stream()
                 .map(Invoice::getId)
-                .collect(Collectors.toSet());
+                .toList();
 
         //find invoice with JOIN FETCH users
         List<Invoice> invoices= invoiceRepository.findAllInvoiceAndUsers(ids);
@@ -209,7 +212,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .toList();
 
         //create requested page from invoices
-        Page<Invoice> invoicePage=new PageImpl<>(invoices,pageable,pagedInvoices.getTotalElements());
+        Page<Invoice> invoicePage=new PageImpl<>(sortedInvoices,pageable,pagedInvoices.getTotalElements());
         //map invoice to invoiceResponse
         return invoicePage.map(invoiceMapper::toInvoiceResponse);
     }

@@ -1,7 +1,5 @@
 package in.shivam.retaillite.invoice.dto;
 
-import in.shivam.retaillite.product.entity.Product;
-import jakarta.persistence.*;
 import lombok.Builder;
 
 import java.math.BigDecimal;
