@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.shivam.retaillite.category.dto.CategoryRequest;
 import in.shivam.retaillite.category.dto.CategoryResponse;
 import in.shivam.retaillite.category.exception.CategoryAlreadyExists;
+import in.shivam.retaillite.category.exception.CategoryDeletionException;
 import in.shivam.retaillite.category.service.CategoryService;
 import in.shivam.retaillite.common.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -156,7 +157,7 @@ public class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldReturn201_WhenDeleteCategory() throws Exception {
+    void shouldReturn204_WhenDeleteCategory() throws Exception {
         doNothing().when(categoryService).delete(anyString());
         mockMvc.perform(delete("/category/{categoryId}","categoryId")
                 .with(csrf())
@@ -177,5 +178,12 @@ public class CategoryControllerTest {
         doThrow(new CategoryAlreadyExists("Illegal operation: category has associated products")).when(categoryService).delete(anyString());
         mockMvc.perform(delete("/category/{categoryId}","categoryId").with(csrf()))
                 .andExpect(status().isConflict());
+    }
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldReturn403_WhenProductsAreAssociatedWithCategory() throws Exception {
+        doThrow(new CategoryDeletionException("Illegal operation: category has associated products")).when(categoryService).delete(anyString());
+        mockMvc.perform(delete("/category/{categoryId}","categoryId").with(csrf()))
+                .andExpect(status().isForbidden());
     }
 }
