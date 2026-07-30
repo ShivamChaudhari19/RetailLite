@@ -24,10 +24,10 @@ public class S3Config {
                         awsProperties.secretKey()
                 );
         return S3Client.builder()
-                . endpointOverride(URI.create(awsProperties.endpoint()))
                 .region(Region.of(awsProperties.region()))
-                .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                .build();
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(credentials)
+                ).build();
     }
 
 //    @Bean

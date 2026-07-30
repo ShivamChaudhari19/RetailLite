@@ -56,7 +56,6 @@ aws:
   access-key: ${AWS_ACCESS_KEY}
   secret-key: ${AWS_SECRET_KEY}
   bucket-name: ${BUCKET_NAME}
-  endpoint: http://localhost:4566
 #todo:insert credentials
 razorpay:
   key-id: ${RAZORPAY_KEY_ID}
