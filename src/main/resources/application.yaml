@@ -1,3 +1,16 @@
+retaillite:
+  company:
+    name: RetailLite
+    address:
+      line1: ABC Road
+      line2: Pune, Maharashtra 411001
+    phone: +91 8459787658
+    email: shivam@gmail.com
+    website: https://demowebsite.demo
+    gst-number: 27ABCDE1234F1Z5
+    logo: classpath:static/logo.jpg
+
+
 logging:
   level:
     root: INFO
